@@ -12,7 +12,8 @@ import {
 } from "components/components/ui/alert-dialog";
 import { Button } from "components/components/ui/button";
 import { motion } from "framer-motion";
-import { Pencil, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon, PencilIcon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { RepoListItem } from "./repo-list-item";
 
@@ -49,14 +50,14 @@ export function ActiveRepoCard({ settings, onEdit, onDelete }: ActiveRepoCardPro
           >
             {onEdit && (
               <Button size="icon" variant="secondary" onClick={onEdit}>
-                <Pencil className="size-4" />
+                <HugeiconsIcon icon={PencilIcon} className="size-4" />
               </Button>
             )}
             {onDelete && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button size="icon" variant="secondary">
-                    <Trash2 className="size-4" />
+                    <HugeiconsIcon icon={Delete02Icon} className="size-4" />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>

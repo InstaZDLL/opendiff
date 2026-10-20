@@ -64,10 +64,16 @@ localRoutes.post("/reviews/local", requireAuth(), async (c) => {
 
   let review: ReviewResult;
   let totalTokens = 0;
-  const aiConfig = await getOrgAiRuntimeConfig(orgId);
+  let aiConfig: Awaited<ReturnType<typeof getOrgAiRuntimeConfig>>;
+  try {
+    aiConfig = await getOrgAiRuntimeConfig(orgId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "AI credentials are not configured";
+    return c.json({ error: message }, 403);
+  }
 
-  // aiConfig is null when org hasn't configured BYOK credentials — the
-  // review-agent will fall back to platform-default credentials from env vars.
+  // aiConfig is null only for active non-BYOK paid plans; the review-agent
+  // will use OpenDiff provider API keys from env vars.
 
   try {
     const response = await postToReviewAgent<{

@@ -1,3 +1,4 @@
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Card,
   CardContent,
@@ -5,46 +6,46 @@ import {
   CardHeader,
   CardTitle,
 } from "components/components/ui/card";
-import { Bot, GitBranch, Shield, Users, Workflow, Zap } from "lucide-react";
+import { BotIcon, GitBranchIcon, Shield01Icon, UsersIcon, WorkflowIcon, ZapIcon } from "@hugeicons/core-free-icons";
 
 const services = [
   {
-    icon: Bot,
+    icon: BotIcon,
     title: "AI Tool Integration",
     description:
       "Seamlessly integrate AI coding assistants like OpenCode, Copilot, and Cursor into your development workflow.",
     features: ["IDE setup & configuration", "Custom prompt engineering", "Context optimization"],
   },
   {
-    icon: Workflow,
+    icon: WorkflowIcon,
     title: "Workflow Automation",
     description:
       "Automate repetitive tasks with AI-powered pipelines for code review, testing, and deployment.",
     features: ["CI/CD enhancement", "Automated code review", "Smart testing strategies"],
   },
   {
-    icon: GitBranch,
+    icon: GitBranchIcon,
     title: "Codebase Augmentation",
     description:
       "Prepare your codebase for maximum AI assistance with better documentation and structure.",
     features: ["Documentation generation", "Code refactoring", "Architecture optimization"],
   },
   {
-    icon: Users,
+    icon: UsersIcon,
     title: "Team Training",
     description:
       "Hands-on training programs to help your team effectively leverage AI tools for development.",
     features: ["Workshop sessions", "Best practices guides", "Ongoing mentorship"],
   },
   {
-    icon: Shield,
+    icon: Shield01Icon,
     title: "Security & Compliance",
     description:
       "Implement AI tools while maintaining security standards and regulatory compliance.",
     features: ["Code audit protocols", "Data privacy setup", "Compliance frameworks"],
   },
   {
-    icon: Zap,
+    icon: ZapIcon,
     title: "Performance Optimization",
     description: "Use AI to identify and fix performance bottlenecks across your entire stack.",
     features: ["Performance profiling", "AI-assisted debugging", "Optimization strategies"],
@@ -67,7 +68,7 @@ export function ServicesSection() {
             <Card key={service.title} className="hover:ring-2 hover:ring-primary/20 transition-all">
               <CardHeader>
                 <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <service.icon className="size-6 text-primary" />
+                  <HugeiconsIcon icon={service.icon} className="size-6 text-primary" />
                 </div>
                 <CardTitle>{service.title}</CardTitle>
                 <CardDescription>{service.description}</CardDescription>

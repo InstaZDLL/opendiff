@@ -13,15 +13,8 @@ import { useOrganization } from "shared/organizations";
 
 import { Separator } from "components/components/ui/separator";
 import { Skeleton } from "components/components/ui/skeleton";
-import {
-  CheckCheck,
-  CircleDot,
-  ExternalLink,
-  GitMerge,
-  GitPullRequest,
-  Loader2,
-  Sparkles,
-} from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckCheckIcon, CircleDotIcon, ExternalLinkIcon, GitMergeIcon, GitPullRequestIcon, Loading03Icon, SparklesIcon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 
 import { Link, useParams } from "react-router-dom";
@@ -150,17 +143,17 @@ export function PullRequestDetailPage() {
               <div className="mb-3">
                 {review.pullStatus === "merged" ? (
                   <Badge className="gap-1 bg-purple-600/10 text-purple-600 dark:bg-purple-400/10 dark:text-purple-400">
-                    <GitMerge className="size-3" />
+                    <HugeiconsIcon icon={GitMergeIcon} className="size-3" />
                     Merged
                   </Badge>
                 ) : review.pullStatus === "closed" ? (
                   <Badge className="gap-1 bg-red-600/10 text-red-600 dark:bg-red-400/10 dark:text-red-400">
-                    <CircleDot className="size-3" />
+                    <HugeiconsIcon icon={CircleDotIcon} className="size-3" />
                     Closed
                   </Badge>
                 ) : (
                   <Badge className="gap-1 bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400">
-                    <GitPullRequest className="size-3" />
+                    <HugeiconsIcon icon={GitPullRequestIcon} className="size-3" />
                     Open
                   </Badge>
                 )}
@@ -217,7 +210,7 @@ export function PullRequestDetailPage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 hover:text-foreground ml-auto"
                   >
-                    <ExternalLink className="size-3.5" />
+                    <HugeiconsIcon icon={ExternalLinkIcon} className="size-3.5" />
                     View on GitHub
                   </a>
                 )}
@@ -234,7 +227,7 @@ export function PullRequestDetailPage() {
                   <Card>
                     <CardContent className="pt-4 space-y-3">
                       <div className="flex items-center gap-2 text-sm font-medium">
-                        <Loader2 className="size-4 animate-spin" />
+                        <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
                         Generating AI summary...
                       </div>
                       <div className="space-y-2">
@@ -251,7 +244,7 @@ export function PullRequestDetailPage() {
                       <AccordionTrigger>
                         <div className="flex items-center gap-1.5">
                           <div className="relative">
-                            <Sparkles className="size-3" />
+                            <HugeiconsIcon icon={SparklesIcon} className="size-3" />
                           </div>
                           <h3 className="text-sm">AI Analysis</h3>
                         </div>
@@ -297,9 +290,9 @@ export function PullRequestDetailPage() {
                       disabled={isAcceptingAll}
                     >
                       {isAcceptingAll ? (
-                        <Loader2 className="size-4 animate-spin" />
+                        <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
                       ) : (
-                        <CheckCheck className="size-4" />
+                        <HugeiconsIcon icon={CheckCheckIcon} className="size-4" />
                       )}
                       Accept All Fixes
                     </Button>

@@ -80,4 +80,58 @@ describe("settings API client", () => {
       SettingsApiUnavailableError
     );
   });
+
+  it("returns null AI config when BFF explicitly requests default credentials", async () => {
+    process.env.SETTINGS_API_URL = "https://settings.internal";
+    process.env.REVIEW_AGENT_API_KEY = "internal-secret";
+
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ useDefault: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const { getRuntimeAiConfig } = await loadSettingsModule();
+    await expect(getRuntimeAiConfig("owner", "repo", 123)).resolves.toBeNull();
+  });
+
+  it("skips BFF AI config lookup when auth.json override is enabled", async () => {
+    process.env.SETTINGS_API_URL = "https://settings.internal";
+    process.env.REVIEW_AGENT_API_KEY = "internal-secret";
+    process.env.OPENCODE_USE_AUTH_JSON = "true";
+
+    const fetchMock = vi.fn();
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const { getRuntimeAiConfig } = await loadSettingsModule();
+
+    await expect(getRuntimeAiConfig("owner", "repo", 123)).resolves.toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("throws AI config errors when BFF forbids default credentials", async () => {
+    process.env.SETTINGS_API_URL = "https://settings.internal";
+    process.env.REVIEW_AGENT_API_KEY = "internal-secret";
+
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: "No BYOK API key configured for Self-sufficient organization",
+          useDefault: false,
+        }),
+        {
+          status: 409,
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+    ) as unknown as typeof fetch;
+
+    const { getRuntimeAiConfig } = await loadSettingsModule();
+
+    await expect(getRuntimeAiConfig("owner", "repo", 123)).rejects.toThrow(
+      "No BYOK API key configured for Self-sufficient organization"
+    );
+  });
 });

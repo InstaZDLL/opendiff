@@ -56,6 +56,7 @@ services:
     environment:
       GITHUB_PRIVATE_KEY_PATH: ${GITHUB_PRIVATE_KEY_PATH:?Set GITHUB_PRIVATE_KEY_PATH}
       OPENCODE_REASONING_EFFORT: medium
+      OPENCODE_AUTH_PATH: ${OPENCODE_AUTH_PATH:-/tmp/opencode-auth/auth.json}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

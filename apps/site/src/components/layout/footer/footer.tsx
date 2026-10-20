@@ -1,6 +1,8 @@
+import { cn } from "components";
 import { Button, Logo } from "components/components";
 import type { MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { STATUS_PAGE_URL, useSystemStatus } from "./use-system-status";
 
 type FooterLink = {
   label: string;
@@ -16,7 +18,6 @@ const footerSections: { title: string; links: FooterLink[] }[] = [
     links: [
       { label: "Overview", href: "/#overview" },
       { label: "Pricing", href: "/pricing" },
-      { label: "FAQ", href: "/#faq" },
       { label: "Changelog", href: "/changelog" },
     ],
   },
@@ -34,13 +35,20 @@ const footerSections: { title: string; links: FooterLink[] }[] = [
     links: [
       { label: "Docs", href: "https://docs.opendiff.dev" },
       { label: "Comparisons", href: "/comparisons" },
-      { label: "Cursor Extension", href: "cursor:extension/opendiff.opendiff-local-review" },
+      { label: "For Cursor", href: "cursor:extension/opendiff.opendiff-local-review" },
       {
-        label: "VSCode Extension",
+        label: "For VSCode",
         href: "vscode:extension/opendiff.opendiff-local-review",
         fallbackHref:
           "https://marketplace.visualstudio.com/items?itemName=opendiff.opendiff-local-review",
       },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms", href: "/terms" },
+      { label: "Privacy", href: "/privacy" },
     ],
   },
 ];
@@ -87,6 +95,7 @@ function isExternalLink(href: string): boolean {
 
 export function Footer() {
   const location = useLocation();
+  const systemStatus = useSystemStatus();
 
   const onHashLinkClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     const [path, rawHash] = href.split("#");
@@ -116,31 +125,21 @@ export function Footer() {
     <footer className="relative z-10 w-full border-t bg-background py-16 lg:mt-16 md:mt-16 mt-8">
       <div className="max-w-6xl mx-auto px-4 lg:px-8">
         <div className="flex w-full flex-col justify-between gap-10 lg:flex-row lg:items-start lg:text-left">
-          <div className="flex w-full flex-col justify-between gap-6 lg:items-start">
+          <div className="flex w-full flex-col justify-between gap-6 lg:w-1/3 lg:items-start">
             <div className="flex items-center gap-2 lg:justify-start">
               <Link to="/" aria-label="OpenDiff home">
                 <Logo />
               </Link>
             </div>
-            <p className="max-w-[80%] text-base text-muted-foreground">
-              AI-powered code review that finds issues early and helps your team ship faster with
-              confidence.
-            </p>
-            <Button asChild variant="secondary" size="sm" className="mt-6">
-              <Link target="_blank" rel="noreferrer" to="https://status.opendiff.dev">
-                <div className="size-1.5 bg-green-400" />
-                All systems operational
-              </Link>
-            </Button>
           </div>
 
-          <div className="grid w-full gap-6 md:grid-cols-3 lg:gap-20">
+          <div className="grid w-full gap-6 md:grid-cols-4 lg:w-2/3 lg:gap-12">
             {footerSections.map((section) => (
               <div key={section.title}>
-                <h3 className="mb-4">{section.title}</h3>
-                <ul className="space-y-4 text-sm text-muted-foreground">
+                <h4 className="mb-4 text-base font-medium">{section.title}</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                   {section.links.map((link) => (
-                    <li key={link.href} className="font-medium hover:text-primary">
+                    <li key={link.href} className="font-normal whitespace-nowrap hover:text-foreground">
                       {isExternalLink(link.href) ? (
                         link.fallbackHref ? (
                           <a
@@ -180,18 +179,16 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col justify-between gap-4 border-t pt-16 text-sm font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
+        <div className="mt-16 flex flex-col justify-between gap-4 border-t pt-16 text-sm font-normal text-muted-foreground md:flex-row md:items-center md:text-left">
           <p className="order-2 lg:order-1">
-            &copy; {new Date().getFullYear()} OpenDiff. All rights reserved.
+            &copy; {new Date().getFullYear()} Contrast by Orange Matter AB. All rights reserved.
           </p>
-          <ul className="order-1 flex flex-col gap-8 md:order-2 md:flex-row">
-            <li className="hover:text-primary">
-              <Link to="/terms">Terms</Link>
-            </li>
-            <li className="hover:text-primary">
-              <Link to="/privacy">Privacy</Link>
-            </li>
-          </ul>
+          <Button asChild variant="secondary" size="sm" className="order-1 self-start md:order-2 md:self-auto">
+            <Link target="_blank" rel="noreferrer" to={STATUS_PAGE_URL}>
+              <span className={cn("size-1.5 rounded-full", systemStatus.dotClassName)} />
+              {systemStatus.label}
+            </Link>
+          </Button>
         </div>
       </div>
     </footer>

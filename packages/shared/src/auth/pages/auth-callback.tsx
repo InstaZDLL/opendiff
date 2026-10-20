@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useNavigationConfig } from "../../navigation";
@@ -64,7 +65,7 @@ export function AuthCallbackPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
     </div>
   );
 }

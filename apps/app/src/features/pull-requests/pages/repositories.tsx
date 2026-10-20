@@ -25,7 +25,8 @@ import {
 import { SearchBar } from "components/components/ui/search-bar";
 import { Skeleton } from "components/components/ui/skeleton";
 import { useDebounce } from "components/hooks";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useMemo, useState } from "react";
 import { useAuth } from "shared/auth";
 import { useOrganization } from "shared/organizations";
@@ -295,7 +296,7 @@ export function RepositoriesPage() {
 
           {isLoadingEditSettings && (
             <div className="flex items-center justify-center py-6">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+              <HugeiconsIcon icon={Loading03Icon} className="size-6 animate-spin text-muted-foreground" />
             </div>
           )}
 

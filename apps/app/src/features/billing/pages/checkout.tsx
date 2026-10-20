@@ -1,5 +1,6 @@
 import { Button } from "components/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "shared/auth";
@@ -139,7 +140,7 @@ export function CheckoutPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+          <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
           <p className="text-muted-foreground">Preparing checkout...</p>
         </div>
       )}

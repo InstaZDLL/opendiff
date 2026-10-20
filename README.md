@@ -57,6 +57,21 @@ cd opendiff
 bun install
 ```
 
+### Fonts
+
+The app and website use Helvetica Now Display for headings and Helvetica Now Text for everything else. These are licensed fonts from [Monotype](https://www.monotype.com/fonts/helvetica-now) and are not checked into the repository.
+
+If you have a license, put these files in `packages/assets/public/fonts/`:
+
+- `HelveticaNowText-Regular.woff2`
+- `HelveticaNowText-Medium.woff2`
+- `HelveticaNowText-Bold.woff2`
+- `HelveticaNowDisplay-Regular.woff2`
+- `HelveticaNowDisplay-Medium.woff2`
+- `HelveticaNowDisplay-Bold.woff2`
+
+Without them, the UI falls back to Helvetica Neue, Helvetica or Arial.
+
 ### Environment Setup
 
 For local development, each package requires its own environment configuration. Copy the example files and configure:
@@ -88,6 +103,11 @@ GOOGLE_CLIENT_ID=xxx
 GOOGLE_CLIENT_SECRET=xxx
 MICROSOFT_CLIENT_ID=xxx
 MICROSOFT_CLIENT_SECRET=xxx
+
+# Email (Resend) — sends email sign-in codes/links and org invites.
+# Without RESEND_API_KEY, codes and links are printed to the server log instead.
+RESEND_API_KEY=re_xxx
+FROM_EMAIL="Contrast <noreply@opendiff.dev>"
 
 # GitHub App credentials (same values as review agent — used for fetching PR metadata)
 GITHUB_APP_ID=xxx
@@ -176,10 +196,6 @@ VITE_SELF_SUFFICIENT_YEARLY_PRODUCT_ID=xxx
 ```env
 VITE_API_URL=http://localhost:3001
 VITE_APP_URL=http://localhost:5174
-
-# Optional: GitHub repo slug for displaying live star count
-# Example: antiptrn/opendiff
-VITE_GITHUB_REPO=
 
 # Dev server host allowlist (comma-separated)
 VITE_ALLOWED_HOSTS=localhost,127.0.0.1,opendiff.dev,.opendiff.dev
@@ -371,7 +387,7 @@ Skills are automatically applied based on the repository configuration and team 
 
 | Tier | Token Quota | Features |
 |------|-------------|----------|
-| **Self-sufficient** | Unlimited (BYOK) | Bring Your Own Key — use your Anthropic API key |
+| **Self-sufficient** | Unlimited (BYOK) | Bring Your Own Key — use your selected model provider API key |
 | **Pro** | 2.5M tokens/mo | Automated PR reviews, auto-fix, custom rules, skills |
 | **Ultra** | 8M tokens/mo | Everything in Pro with higher token quota |
 
@@ -404,6 +420,14 @@ export GITHUB_PRIVATE_KEY_PATH=/absolute/path/to/private-key.pem
 ```
 
 `docker-compose.prod.yml` mounts this path into both `bff` and `agent` containers.
+
+### Merged PR stats (one-time backfill)
+
+The site's "Pull requests merged with Contrast" counter reads `GET /api/public/stats`. New merges are recorded automatically from the review agent's `pull_request` webhooks. To count PRs merged before this was deployed, run once on the server after the migration:
+
+```bash
+docker compose -f docker-compose.prod.yml run --rm bff bun apps/bff/scripts/backfill-merged-prs.ts
+```
 
 ### Review Agent (Docker)
 

@@ -9,7 +9,8 @@ import {
 } from "components/components/ui/card";
 import { Skeleton } from "components/components/ui/skeleton";
 import { Textarea } from "components/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -59,7 +60,7 @@ function RulesForm({ initialRules, onSave, isSaving }: RulesFormProps) {
       <div className="flex items-center justify-between mt-6">
         <p className="text-sm text-muted-foreground">{localRules.length}/5000 characters</p>
         <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
-          {isSaving && <Loader2 className="size-4 animate-spin" />}
+          {isSaving && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
           {isSaving ? "Saving..." : "Save Rules"}
         </Button>
       </div>

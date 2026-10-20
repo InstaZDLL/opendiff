@@ -3,7 +3,8 @@ import { Badge, Card, cn } from "components";
 import { Button } from "components/components/ui/button";
 import { TooltipContent, TooltipRoot, TooltipTrigger } from "components/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Info, Loader2, X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckIcon, InfoIcon, Loading03Icon, XIcon } from "@hugeicons/core-free-icons";
 import type { SubscriptionTier } from "../../auth";
 import { formatTokenQuota } from "../format";
 import { type Plan, TIER_HIERARCHY } from "../pricing.constants";
@@ -79,9 +80,9 @@ export function PlanCard({
 
   return (
     <Card className={cn("p-6 flex flex-col gap-0 overflow-visible", className)}>
-      <div className="flex items-center gap-3">
-        <h3 className="text-lg">{plan.name}</h3>
-        {plan.popular && <Badge variant="secondary">Popular</Badge>}
+      <div className="flex items-center gap-2.5">
+        <h3 className="text-lg font-medium">{plan.name}</h3>
+        {plan.popular && <Badge>Popular</Badge>}
       </div>
       <p className="text-base text-muted-foreground mt-2">{plan.description}</p>
 
@@ -90,7 +91,7 @@ export function PlanCard({
           value={isYearly ? Math.round(price * 2) / 2 : price}
           format={{ style: "currency", currency: "USD", maximumFractionDigits: isYearly ? 2 : 0 }}
           suffix="/month"
-          className="text-2xl [&>span:last-child]:text-base [&>span:last-child]:font-normal [&>span:last-child]:text-muted-foreground"
+          className="text-2xl tracking-tight [&>span:last-child]:text-base [&>span:last-child]:font-normal [&>span:last-child]:text-muted-foreground"
         />
         <AnimatePresence initial={false}>
           {isYearly && plan.monthlyPrice > 0 && (
@@ -115,7 +116,7 @@ export function PlanCard({
       <ul className="mt-6 space-y-3 flex-1">
         <li className="flex items-center gap-1.5 text-sm">
           <div className="mr-1">
-            <Check className="size-4 shrink-0" />
+            <HugeiconsIcon icon={CheckIcon} className="size-4 shrink-0" />
           </div>
           <span>{plan.features[0].name}</span>
         </li>
@@ -123,9 +124,9 @@ export function PlanCard({
         <li className="flex items-center gap-1.5 text-sm">
           <div className="mr-1">
             {plan.monthlyTokenQuota !== 0 ? (
-              <Check className="size-4 shrink-0" />
+              <HugeiconsIcon icon={CheckIcon} className="size-4 shrink-0" />
             ) : (
-              <X className="size-4 text-muted-foreground shrink-0" />
+              <HugeiconsIcon icon={XIcon} className="size-4 text-muted-foreground shrink-0" />
             )}
           </div>
           <span className={plan.monthlyTokenQuota !== 0 ? "" : "text-muted-foreground"}>
@@ -142,11 +143,11 @@ export function PlanCard({
               delay={0}
               className="text-muted-foreground hover:text-foreground transition-colors p-1.5 -m-1.5"
             >
-              <Info className="size-3" />
+              <HugeiconsIcon icon={InfoIcon} className="size-3" />
             </TooltipTrigger>
             <TooltipContent>
               {plan.monthlyTokenQuota === -1
-                ? "No limits - you pay Anthropic directly for API usage"
+                ? "No limits - you pay your selected AI provider directly for API usage"
                 : plan.monthlyTokenQuota > 0
                   ? "Token usage resets monthly"
                   : "Purchase a seat to enable code reviews"}
@@ -158,9 +159,9 @@ export function PlanCard({
           <li key={feature.name} className="flex items-center gap-1.5 text-sm">
             <div className="mr-1">
               {feature.included ? (
-                <Check className="size-4 shrink-0" />
+                <HugeiconsIcon icon={CheckIcon} className="size-4 shrink-0" />
               ) : (
-                <X className="size-4 text-muted-foreground shrink-0" />
+                <HugeiconsIcon icon={XIcon} className="size-4 text-muted-foreground shrink-0" />
               )}
             </div>
             <span className={feature.included ? "" : "text-muted-foreground"}>{feature.name}</span>
@@ -170,7 +171,7 @@ export function PlanCard({
                   delay={0}
                   className="text-muted-foreground hover:text-foreground transition-colors p-1.5 -m-1.5"
                 >
-                  <Info className="size-3" />
+                  <HugeiconsIcon icon={InfoIcon} className="size-3" />
                 </TooltipTrigger>
                 <TooltipContent>{feature.tooltip}</TooltipContent>
               </TooltipRoot>
@@ -186,7 +187,7 @@ export function PlanCard({
         disabled={isLoading || isCurrentPlan || disabled}
         onClick={() => onGetStarted(plan.tier)}
       >
-        {isLoading && <Loader2 className="size-4 animate-spin" />}
+        {isLoading && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
         {buttonText ?? getButtonText()}
       </Button>
     </Card>

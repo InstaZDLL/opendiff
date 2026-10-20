@@ -1,13 +1,13 @@
 import { Button } from "components/components";
 import { cn } from "components/utils";
-import type { LucideIcon } from "lucide-react";
+import { type IconSvgElement } from "@hugeicons/react";
 import { Link } from "react-router-dom";
 
 /** Configuration for a navigation link. */
 export interface NavItemConfig {
   label: string;
   href: string;
-  icon: LucideIcon;
+  icon: IconSvgElement;
 }
 
 /** Horizontal navigation tab item. */

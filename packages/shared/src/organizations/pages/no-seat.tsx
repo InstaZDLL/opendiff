@@ -6,7 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "components/components/ui/card";
-import { Loader2, Minus, Plus, UserX } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon, MinusIcon, PlusIcon, UserXIcon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -47,7 +48,7 @@ export function NoSeatPage() {
       <Card className="max-w-lg w-full">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 rounded-full bg-muted p-3 w-fit">
-            <UserX className="h-8 w-8 text-muted-foreground" />
+            <HugeiconsIcon icon={UserXIcon} className="h-8 w-8 text-muted-foreground" />
           </div>
           <CardTitle className="text-2xl">No Active Subscription</CardTitle>
           <CardDescription>
@@ -99,7 +100,7 @@ export function NoSeatPage() {
                     onClick={() => setSeatCount(Math.max(1, seatCount - 1))}
                     disabled={seatCount <= 1}
                   >
-                    <Minus className="h-4 w-4" />
+                    <HugeiconsIcon icon={MinusIcon} className="h-4 w-4" />
                   </Button>
                   <div className="flex flex-col items-center min-w-[60px]">
                     <span className="text-2xl font-semibold">{seatCount}</span>
@@ -113,7 +114,7 @@ export function NoSeatPage() {
                     onClick={() => setSeatCount(Math.min(100, seatCount + 1))}
                     disabled={seatCount >= 100}
                   >
-                    <Plus className="h-4 w-4" />
+                    <HugeiconsIcon icon={PlusIcon} className="h-4 w-4" />
                   </Button>
                 </div>
               )}
@@ -149,7 +150,7 @@ export function NoSeatPage() {
                   disabled={manageSubscriptionMutation.isPending}
                 >
                   {manageSubscriptionMutation.isPending && (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    <HugeiconsIcon icon={Loading03Icon} className="h-4 w-4 animate-spin mr-2" />
                   )}
                   <span>Ultra - 8M tokens + autofix</span>
                   <span className="text-muted-foreground">

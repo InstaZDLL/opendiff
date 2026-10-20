@@ -15,7 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "components/components/ui/table";
-import { Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon } from "@hugeicons/core-free-icons";
 import type { OrganizationRole } from "shared/auth";
 import { formatRoleName } from "shared/billing";
 
@@ -90,7 +91,7 @@ export function PendingInvitesCard({
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="outline" size="icon" onClick={() => onRevokeInvite(invite.id)}>
-                      <Trash2 className="size-4 text-destructive" />
+                      <HugeiconsIcon icon={Delete02Icon} className="size-4 text-destructive" />
                     </Button>
                   </TableCell>
                 </TableRow>

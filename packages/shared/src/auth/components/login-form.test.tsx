@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createWrapper } from "../../test/test-utils";
 import { LoginForm } from "./login-form";
@@ -9,7 +10,15 @@ const TURNSTILE_SCRIPT_SRC =
 const originalLocation = window.location;
 
 function renderLoginForm(props: React.ComponentProps<typeof LoginForm> = {}) {
-  return render(<LoginForm {...props} />, { wrapper: createWrapper() });
+  return render(
+    <MemoryRouter initialEntries={["/login"]}>
+      <Routes>
+        <Route path="/login" element={<LoginForm {...props} />} />
+        <Route path="/auth/callback" element={<p>callback reached</p>} />
+      </Routes>
+    </MemoryRouter>,
+    { wrapper: createWrapper() }
+  );
 }
 
 async function getTurnstileScript() {
@@ -129,5 +138,52 @@ describe("LoginForm", () => {
     await screen.findByRole("button", { name: /login with github/i });
     expect(ready).not.toHaveBeenCalled();
     expect(onVerificationStatusChange).toHaveBeenCalledWith("ready");
+  });
+
+  describe("email sign-in", () => {
+    beforeEach(() => {
+      vi.stubEnv("VITE_TURNSTILE_SITE_KEY", "");
+    });
+
+    it("requests a code and shows the code step", async () => {
+      const fetchMock = vi
+        .spyOn(globalThis, "fetch")
+        .mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+      renderLoginForm();
+
+      fireEvent.change(screen.getByLabelText("Email address"), {
+        target: { value: "dev@example.com" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /continue with email/i }));
+
+      expect(await screen.findByLabelText("Sign-in code")).toBeInTheDocument();
+      expect(screen.getByText("dev@example.com")).toBeInTheDocument();
+      const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      expect(url).toContain("/auth/email/start");
+      expect(JSON.parse(String(init.body)).email).toBe("dev@example.com");
+    });
+
+    it("verifies the code and continues to the auth callback", async () => {
+      vi.spyOn(globalThis, "fetch")
+        .mockResolvedValueOnce(new Response(JSON.stringify({ ok: true }), { status: 200 }))
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({ visitorId: "u1", access_token: "cst_x", auth_provider: "email" }),
+            { status: 200 }
+          )
+        );
+      renderLoginForm();
+
+      fireEvent.change(screen.getByLabelText("Email address"), {
+        target: { value: "dev@example.com" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /continue with email/i }));
+      fireEvent.change(await screen.findByLabelText("Sign-in code"), {
+        target: { value: "123456" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /^continue$/i }));
+
+      expect(await screen.findByText("callback reached")).toBeInTheDocument();
+    });
   });
 });

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NotFound } from "components/components";
 import { ThemeProvider } from "next-themes";
-import { StrictMode } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Navigate, Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 
@@ -21,7 +21,7 @@ import {
 import { SettingsPage } from "@/features/settings";
 
 // Shared
-import { AuthCallbackPage, LoginPage, OnboardingPage } from "shared/auth";
+import { AuthCallbackPage, EmailLinkPage, LoginPage, OnboardingPage } from "shared/auth";
 import { NavigationScrollToTop } from "shared/navigation";
 import {
   CreateOrganizationPage,
@@ -48,6 +48,7 @@ const router = createBrowserRouter([
     children: [
       // Standalone pages without header/footer
       { path: "login", element: <LoginPage /> },
+      { path: "login/email", element: <EmailLinkPage /> },
       { path: "auth/callback", element: <AuthCallbackPage /> },
       { path: "onboarding", element: <OnboardingPage /> },
       { path: "create-organization", element: <CreateOrganizationPage /> },
@@ -79,18 +80,39 @@ const router = createBrowserRouter([
   },
 ]);
 
+/** Signed-out pages always render light so they match the marketing site */
+const SIGNED_OUT_PATH_PREFIXES = ["/login", "/auth/callback", "/invite/"];
+
+function isSignedOutPath(pathname: string) {
+  return SIGNED_OUT_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+function useForcedTheme() {
+  const [pathname, setPathname] = useState(router.state.location.pathname);
+  useEffect(() => router.subscribe((state) => setPathname(state.location.pathname)), []);
+  return isSignedOutPath(pathname) ? "light" : undefined;
+}
+
+function App() {
+  const forcedTheme = useForcedTheme();
+
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem forcedTheme={forcedTheme}>
+      <KeyedOrganizationProvider>
+        <RouterProvider router={router} />
+        <Toaster position="bottom-center" />
+      </KeyedOrganizationProvider>
+    </ThemeProvider>
+  );
+}
+
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element not found");
 
 createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <KeyedOrganizationProvider>
-          <RouterProvider router={router} />
-          <Toaster position="bottom-center" />
-        </KeyedOrganizationProvider>
-      </ThemeProvider>
+      <App />
     </QueryClientProvider>
   </StrictMode>
 );

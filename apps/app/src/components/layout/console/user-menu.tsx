@@ -9,7 +9,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "components/components/ui/dropdown-menu";
-import { ArrowLeftRight, LifeBuoy, Loader2, LogOut, MessageSquare, UserPlus } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeftRightIcon, LifebuoyIcon, Loading03Icon, LogOutIcon, MessageSquareIcon, UserPlusIcon } from "@hugeicons/core-free-icons";
 import { Link, useLocation } from "react-router-dom";
 import type { useAuth } from "shared/auth";
 
@@ -51,7 +52,7 @@ export function UserMenu({
         {/* Current user with submenu for account switching */}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="flex items-center gap-2.5 pr-3">
-            <ArrowLeftRight className="size-4" />
+            <HugeiconsIcon icon={ArrowLeftRightIcon} className="size-4" />
             Switch account
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="w-64">
@@ -77,7 +78,7 @@ export function UserMenu({
                           className="flex items-center gap-2.5 cursor-pointer"
                         >
                           {isSwitching ? (
-                            <Loader2 className="size-4 animate-spin" />
+                            <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
                           ) : (
                             <Avatar className="size-4.5">
                               <AvatarImage src={account.avatar_url} />
@@ -96,25 +97,25 @@ export function UserMenu({
               <Link
                 to={`/login?addAccount=true&redirectUrl=${encodeURIComponent(location.pathname)}`}
               >
-                <UserPlus className="size-4" />
+                <HugeiconsIcon icon={UserPlusIcon} className="size-4" />
                 Add account
               </Link>
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuItem onClick={onFeedbackClick} className="cursor-pointer">
-          <MessageSquare className="size-4" />
+          <HugeiconsIcon icon={MessageSquareIcon} className="size-4" />
           Leave feedback
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
           <a href="mailto:support@opendiff.dev?subject=Support%20Request">
-            <LifeBuoy className="size-4" />
+            <HugeiconsIcon icon={LifebuoyIcon} className="size-4" />
             Support
           </a>
         </DropdownMenuItem>
         {/* Sign out - in main dropdown */}
         <DropdownMenuItem onClick={onLogout} className="cursor-pointer">
-          <LogOut className="size-4" />
+          <HugeiconsIcon icon={LogOutIcon} className="size-4" />
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -19,7 +19,8 @@ import {
 } from "components/components/ui/card";
 import { LoadingButton } from "components/components/ui/loading-button";
 import { Separator } from "components/components/ui/separator";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { formatCents, formatDate, tierLabels, tierPrices } from "shared/billing";
 import {
@@ -224,7 +225,7 @@ export function TeamSubscriptionCard({
                     onClick={() => setShowUpdateDialog(true)}
                     disabled={!hasChanges || isUpdatingSeats}
                   >
-                    {isUpdatingSeats && <Loader2 className="size-3 animate-spin" />}
+                    {isUpdatingSeats && <HugeiconsIcon icon={Loading03Icon} className="size-3 animate-spin" />}
                     {willReactivate ? "Update & Reactivate" : "Update Seats"}
                   </Button>
                   <Button variant="outline" onClick={() => setShowCancelDialog(true)}>
@@ -308,7 +309,7 @@ export function TeamSubscriptionCard({
             <AlertDialogFooter>
               <AlertDialogCancel size="sm">Cancel</AlertDialogCancel>
               <AlertDialogAction size="sm" onClick={handleConfirmUpdate}>
-                {isUpdatingSeats && <Loader2 className="size-4 animate-spin" />}
+                {isUpdatingSeats && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
                 {willReactivate ? "Confirm & Reactivate" : "Confirm"}
               </AlertDialogAction>
             </AlertDialogFooter>

@@ -1,4 +1,5 @@
-import { Check, Clock, Code2, ShieldCheck, TrendingUp, Users } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckIcon, Clock01Icon, CodeIcon, ShieldCheckIcon, TrendingUpIcon, UsersIcon } from "@hugeicons/core-free-icons";
 
 const metrics = [
   { value: "10x", label: "Faster Development" },
@@ -9,37 +10,37 @@ const metrics = [
 
 const benefits = [
   {
-    icon: TrendingUp,
+    icon: TrendingUpIcon,
     title: "Increased Velocity",
     description:
       "Ship features faster without compromising on quality. AI handles the repetitive work so your team can focus on creative problem-solving.",
   },
   {
-    icon: Clock,
+    icon: Clock01Icon,
     title: "Reduced Time to Market",
     description:
       "Accelerate your development cycles and beat competitors to market with AI-augmented workflows.",
   },
   {
-    icon: Code2,
+    icon: CodeIcon,
     title: "Higher Code Quality",
     description:
       "AI-assisted code review catches bugs early and enforces consistent coding standards across your codebase.",
   },
   {
-    icon: Users,
+    icon: UsersIcon,
     title: "Happier Developers",
     description:
       "Eliminate tedious tasks and let your engineers work on challenging, fulfilling problems.",
   },
   {
-    icon: ShieldCheck,
+    icon: ShieldCheckIcon,
     title: "Enterprise Security",
     description:
       "Implement AI tools with proper security controls and compliance measures in place.",
   },
   {
-    icon: Check,
+    icon: CheckIcon,
     title: "Measurable ROI",
     description:
       "Track concrete improvements in velocity, quality, and developer satisfaction with our metrics framework.",
@@ -73,7 +74,7 @@ export function BenefitsSection() {
           {benefits.map((benefit) => (
             <div key={benefit.title} className="flex gap-4">
               <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <benefit.icon className="size-5 text-primary" />
+                <HugeiconsIcon icon={benefit.icon} className="size-5 text-primary" />
               </div>
               <div>
                 <h3 className="font-semibold mb-1">{benefit.title}</h3>

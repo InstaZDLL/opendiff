@@ -3,14 +3,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "components/components/ui/av
 import { Badge } from "components/components/ui/badge";
 import { Button } from "components/components/ui/button";
 import { cn } from "components/utils";
-import { BookOpenText, type LucideIcon } from "lucide-react";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { BookOpenTextIcon } from "@hugeicons/core-free-icons";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 export interface ConsoleHeaderNavItem {
   label: string;
   href: string;
-  icon: LucideIcon;
+  icon: IconSvgElement;
 }
 
 interface ConsoleHeaderProps {
@@ -58,7 +59,7 @@ export function ConsoleHeader({
                 </AvatarFallback>
               </Avatar>
             ) : (
-              <Icon className="size-6" />
+              <Icon size="lg" />
             )}
           </Link>
           <div className="flex min-w-0 items-center gap-2">
@@ -91,7 +92,7 @@ export function ConsoleHeader({
                   )}
                 >
                   <Link key={item.href} to={item.href}>
-                    <item.icon className="size-4 -mt-0.5" />
+                    <HugeiconsIcon icon={item.icon} className="size-4 -mt-0.5" />
                     <span>{item.label}</span>
                   </Link>
                 </Button>
@@ -106,7 +107,7 @@ export function ConsoleHeader({
             onClick={onResourceHubClick}
           >
             <Link target="_blank" rel="noreferrer" to="https://docs.opendiff.dev">
-              <BookOpenText className="size-4" />
+              <HugeiconsIcon icon={BookOpenTextIcon} className="size-4" />
               Docs
             </Link>
           </Button>

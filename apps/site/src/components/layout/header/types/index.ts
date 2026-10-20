@@ -4,9 +4,3 @@ export interface NavLink {
   href: string;
   badge?: string;
 }
-
-/** Position and dimensions for the hover indicator */
-export interface HoverStyle {
-  left: number;
-  width: number;
-}

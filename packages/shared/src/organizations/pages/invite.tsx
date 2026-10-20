@@ -7,7 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "components/components/ui/card";
-import { Building2, CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Building03Icon, CancelCircleIcon, CheckmarkCircle02Icon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../../auth";
@@ -116,7 +117,7 @@ export default function InvitePage() {
   if (isLoading || isAuthLoading) {
     return (
       <section className="min-h-screen flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
       </section>
     );
   }
@@ -128,7 +129,7 @@ export default function InvitePage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-              <XCircle className="h-6 w-6 text-destructive" />
+              <HugeiconsIcon icon={CancelCircleIcon} className="h-6 w-6 text-destructive" />
             </div>
             <CardTitle className="text-2xl">Invalid Invite</CardTitle>
             <CardDescription>{error}</CardDescription>
@@ -150,7 +151,7 @@ export default function InvitePage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-              <CheckCircle2 className="h-6 w-6 text-green-500" />
+              <HugeiconsIcon icon={CheckmarkCircle02Icon} className="h-6 w-6 text-green-500" />
             </div>
             <CardTitle className="text-2xl">Welcome!</CardTitle>
             <CardDescription>
@@ -158,7 +159,7 @@ export default function InvitePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <HugeiconsIcon icon={Loading03Icon} className="h-6 w-6 animate-spin text-muted-foreground" />
           </CardContent>
         </Card>
       </section>
@@ -171,7 +172,7 @@ export default function InvitePage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Building2 className="h-6 w-6 text-primary" />
+            <HugeiconsIcon icon={Building03Icon} className="h-6 w-6 text-primary" />
           </div>
           <CardTitle className="text-2xl">You're invited!</CardTitle>
           <CardDescription>
@@ -210,7 +211,7 @@ export default function InvitePage() {
               <Button onClick={handleAccept} className="w-full" disabled={isAccepting}>
                 {isAccepting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <HugeiconsIcon icon={Loading03Icon} className="mr-2 h-4 w-4 animate-spin" />
                     Joining...
                   </>
                 ) : (

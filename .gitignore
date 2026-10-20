@@ -182,3 +182,7 @@ dist
 *.private-key
 *.private-key.*
 private-key.pem
+
+# Licensed Helvetica Now fonts (not redistributable, see README "Fonts")
+
+packages/assets/public/fonts

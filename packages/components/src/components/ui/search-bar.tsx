@@ -1,4 +1,5 @@
-import { Search } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Search01Icon } from "@hugeicons/core-free-icons";
 import * as React from "react";
 import { cn } from "../../utils/cn";
 import { Input } from "./input";
@@ -16,7 +17,7 @@ export function SearchBar({
 }: SearchBarProps) {
   return (
     <div className={cn("relative w-full", containerClassName)}>
-      <Search
+      <HugeiconsIcon icon={Search01Icon}
         strokeWidth={2.5}
         className={cn(
           "absolute top-1/2 left-5 size-4.5 -translate-y-1/2 text-foreground",

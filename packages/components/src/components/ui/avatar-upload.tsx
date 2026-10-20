@@ -1,5 +1,6 @@
 import imageCompression from "browser-image-compression";
-import { Loader2, Upload, X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon, Upload04Icon, XIcon } from "@hugeicons/core-free-icons";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "../../utils/cn";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
@@ -146,12 +147,12 @@ export function AvatarUpload({
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled || isUploading}
           aria-label="Upload avatar"
-          className="cursor-pointer absolute inset-0 flex items-center justify-center rounded-none bg-black/50 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity disabled:cursor-not-allowed"
+          className="cursor-pointer absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity disabled:cursor-not-allowed"
         >
           {isUploading ? (
-            <Loader2 className="size-4 text-white animate-spin" />
+            <HugeiconsIcon icon={Loading03Icon} className="size-4 text-white animate-spin" />
           ) : (
-            <Upload className="size-4 text-white" />
+            <HugeiconsIcon icon={Upload04Icon} className="size-4 text-white" />
           )}
         </button>
 
@@ -163,7 +164,7 @@ export function AvatarUpload({
             aria-label="Remove avatar"
             className="absolute -top-1 -right-1 size-5 rounded-full bg-muted-foreground text-background flex items-center justify-center hover:bg-foreground transition-colors disabled:cursor-not-allowed"
           >
-            <X className="size-3" />
+            <HugeiconsIcon icon={XIcon} className="size-3" />
           </button>
         )}
       </div>

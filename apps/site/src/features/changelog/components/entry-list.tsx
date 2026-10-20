@@ -1,5 +1,6 @@
 import { Separator } from "components/components/ui/separator";
-import { LoaderCircle } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { LoaderCircleIcon } from "@hugeicons/core-free-icons";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { CHANGELOG_CHUNK_SIZE } from "../constants";
 import type { EntryListProps } from "../types";
@@ -52,7 +53,7 @@ export function EntryList({ entries }: EntryListProps) {
   }, [entries.length, hasMore]);
 
   if (entries.length === 0) {
-    return <p className="text-muted-foreground">No changelog entries yet.</p>;
+    return <p className="text-muted-foreground mt-8">No changelog entries yet.</p>;
   }
 
   return (
@@ -76,7 +77,7 @@ export function EntryList({ entries }: EntryListProps) {
 
       {hasMore && (
         <div ref={sentinelRef} className="mt-2 flex w-full justify-center">
-          <LoaderCircle className="h-5 w-5 animate-spin text-muted-foreground" />
+          <HugeiconsIcon icon={LoaderCircleIcon} className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       )}
     </section>

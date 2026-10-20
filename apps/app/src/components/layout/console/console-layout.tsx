@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useThemeCookieSync } from "components/hooks";
-import { ClipboardCheck, FolderGit, LayoutGrid, Loader2, Settings, Shield } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ClipboardCheckIcon, FolderGitIcon, LayoutGridIcon, Loading03Icon, Settings01Icon, Shield01Icon } from "@hugeicons/core-free-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "shared/auth";
@@ -145,7 +146,7 @@ export function ConsoleLayout() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -170,7 +171,7 @@ export function ConsoleLayout() {
   if (isLoadingOrgs || isLoadingDetails || needsOrgDetails || waitingForOrgs) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -189,11 +190,11 @@ export function ConsoleLayout() {
   }
 
   const navItems: ConsoleHeaderNavItem[] = [
-    { label: "Dashboard", href: "/console", icon: LayoutGrid },
-    { label: "Pull Requests", href: "/console/pull-requests", icon: ClipboardCheck },
-    { label: "Repositories", href: "/console/repositories", icon: FolderGit },
-    { label: "Settings", href: "/console/settings", icon: Settings },
-    ...(showAdmin ? [{ label: "Admin", href: "/console/admin", icon: Shield }] : []),
+    { label: "Dashboard", href: "/console", icon: LayoutGridIcon },
+    { label: "Pull Requests", href: "/console/pull-requests", icon: ClipboardCheckIcon },
+    { label: "Repositories", href: "/console/repositories", icon: FolderGitIcon },
+    { label: "Settings", href: "/console/settings", icon: Settings01Icon },
+    ...(showAdmin ? [{ label: "Admin", href: "/console/admin", icon: Shield01Icon }] : []),
   ];
 
   const planLabel = currentSeat?.tier || "Free";

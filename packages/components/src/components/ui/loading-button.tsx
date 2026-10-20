@@ -1,5 +1,6 @@
 import { type VariantProps } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import type { ReactNode } from "react";
 
 import { Button } from "./button";
@@ -42,7 +43,7 @@ function LoadingButton({
   disabled,
   ...props
 }: LoadingButtonProps) {
-  const spinner = <Loader2 className="size-4 animate-spin" />;
+  const spinner = <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />;
   const displayText = isLoading && loadingText ? loadingText : children;
 
   return (

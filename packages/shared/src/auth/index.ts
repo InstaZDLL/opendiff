@@ -20,4 +20,5 @@ export { LoginForm } from "./components/login-form";
 // Pages
 export { default as LoginPage } from "./pages/login";
 export { AuthCallbackPage } from "./pages/auth-callback";
+export { EmailLinkPage } from "./pages/email-link";
 export { default as OnboardingPage } from "./pages/onboarding";

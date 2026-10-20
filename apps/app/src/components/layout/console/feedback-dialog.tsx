@@ -8,7 +8,8 @@ import {
   DialogTitle,
 } from "components/components/ui/dialog";
 import { Textarea } from "components/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useCallback, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { API_URL } from "shared/services";
@@ -108,7 +109,7 @@ export function FeedbackDialog({ open, onOpenChange, accessToken }: FeedbackDial
               <Button onClick={handleSubmit} disabled={isSubmitting || !message.trim()}>
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="size-4 animate-spin" />
+                    <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
                     Sending...
                   </>
                 ) : (

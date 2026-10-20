@@ -12,7 +12,8 @@ import {
 import { Button } from "components/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "components/components/ui/card";
 import { Separator } from "components/components/ui/separator";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -72,7 +73,7 @@ export function AccountManagementCard({ token, orgId, logout }: AccountManagemen
             <p className="text-sm text-muted-foreground">Download all your data as a JSON file.</p>
           </div>
           <Button variant="outline" onClick={handleExportData} disabled={exportData.isPending}>
-            {exportData.isPending && <Loader2 className="size-4 animate-spin" />}
+            {exportData.isPending && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
             {exportData.isPending ? "Exporting..." : "Export Data"}
           </Button>
         </div>
@@ -91,7 +92,7 @@ export function AccountManagementCard({ token, orgId, logout }: AccountManagemen
             onClick={() => setShowDeleteDialog(true)}
             disabled={deleteAccount.isPending}
           >
-            {deleteAccount.isPending && <Loader2 className="size-4 animate-spin" />}
+            {deleteAccount.isPending && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
             {deleteAccount.isPending ? "Deleting..." : "Delete Account"}
           </Button>
         </div>

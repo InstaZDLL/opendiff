@@ -12,40 +12,43 @@ settingsRoutes.use(requireAuth());
 
 // ==================== BYOK AI CONFIG ENDPOINTS ====================
 
-type AiAuthMethod = "API_KEY" | "OAUTH_TOKEN";
+type AiAuthMethod = "API_KEY";
 type AiProvider = "anthropic" | "openai";
 
 const DEFAULT_PROVIDER: AiProvider = "openai";
-const DEFAULT_AUTH_METHOD: AiAuthMethod = "OAUTH_TOKEN";
+const DEFAULT_AUTH_METHOD: AiAuthMethod = "API_KEY";
 const DEFAULT_MODEL = "openai/gpt-5.2-codex";
 
-function requiresOAuth(model: string): boolean {
-  return model.startsWith("openai/gpt-5.3-codex");
-}
-
-function providerFromModel(model: string | null | undefined): AiProvider {
+function providerFromModel(model: string | null | undefined): AiProvider | null {
   if (model?.startsWith("openai/")) {
     return "openai";
+  }
+  if (model?.startsWith("anthropic/")) {
+    return "anthropic";
+  }
+  return null;
+}
+
+function displayProviderFromModel(model: string | null | undefined): AiProvider {
+  const provider = providerFromModel(model);
+  if (provider) {
+    return provider;
   }
   return "anthropic";
 }
 
-function maskCredential(method: AiAuthMethod | null, value: string | null): string | null {
-  if (!method || !value) {
+function maskCredential(value: string | null): string | null {
+  if (!value) {
     return null;
   }
 
-  if (method === "API_KEY") {
-    if (value.startsWith("sk-ant-")) {
-      return `sk-ant-...${value.slice(-4)}`;
-    }
-    if (value.startsWith("sk-")) {
-      return `sk-...${value.slice(-4)}`;
-    }
-    return `...${value.slice(-4)}`;
+  if (value.startsWith("sk-ant-")) {
+    return `sk-ant-...${value.slice(-4)}`;
   }
-
-  return `oauth-...${value.slice(-4)}`;
+  if (value.startsWith("sk-")) {
+    return `sk-...${value.slice(-4)}`;
+  }
+  return `...${value.slice(-4)}`;
 }
 
 // Get AI config status (never returns the actual credential)
@@ -70,27 +73,20 @@ settingsRoutes.get("/ai-config", async (c) => {
     return c.json({ error: "Not a member of this organization" }, 403);
   }
 
-  const authMethod =
-    (org.aiAuthMethod as AiAuthMethod | null) ?? (org.anthropicApiKey ? "API_KEY" : null);
-  const storedCredential =
-    authMethod === "OAUTH_TOKEN"
-      ? org.aiOauthToken
-      : authMethod === "API_KEY"
-        ? org.aiApiKey || org.anthropicApiKey
-        : null;
+  const authMethod: AiAuthMethod | null =
+    org.aiAuthMethod === "API_KEY" || org.anthropicApiKey ? "API_KEY" : null;
+  const storedCredential = authMethod === "API_KEY" ? org.aiApiKey || org.anthropicApiKey : null;
 
   const hasCredential = !!storedCredential;
-  const maskedCredential = maskCredential(authMethod, storedCredential);
+  const maskedCredential = maskCredential(storedCredential);
 
   return c.json({
     hasCredential,
     authMethod: authMethod || DEFAULT_AUTH_METHOD,
-    provider: org.aiModel ? providerFromModel(org.aiModel) : DEFAULT_PROVIDER,
+    provider: org.aiModel ? displayProviderFromModel(org.aiModel) : DEFAULT_PROVIDER,
     model: org.aiModel || DEFAULT_MODEL,
     maskedCredential,
     tier: org.subscriptionTier,
-    hasRefreshToken: !!org.aiOauthRefreshToken,
-    hasAccountId: !!org.aiOauthAccountId,
   });
 });
 
@@ -143,29 +139,28 @@ settingsRoutes.put("/ai-config", async (c) => {
   }
 
   const body = await c.req.json();
-  const { provider, authMethod, model, credential, refreshToken, accountId } = body as {
+  const { provider, authMethod, model, credential } = body as {
     provider?: AiProvider;
-    authMethod?: AiAuthMethod;
+    authMethod?: string;
     model?: string;
     credential?: string;
-    refreshToken?: string;
-    accountId?: string;
   };
 
-  if (!provider || (provider !== "anthropic" && provider !== "openai")) {
-    return c.json({ error: "provider must be anthropic or openai" }, 400);
-  }
-
-  if (!authMethod || (authMethod !== "API_KEY" && authMethod !== "OAUTH_TOKEN")) {
-    return c.json({ error: "authMethod must be API_KEY or OAUTH_TOKEN" }, 400);
-  }
-
-  if (!model || !model.startsWith(`${provider}/`)) {
+  const modelProvider = providerFromModel(model);
+  if (!model || !modelProvider) {
     return c.json({ error: "Invalid model selection" }, 400);
   }
 
+  if (provider && provider !== modelProvider) {
+    return c.json({ error: "provider must match selected model" }, 400);
+  }
+
+  if (authMethod && authMethod !== "API_KEY") {
+    return c.json({ error: "Self-sufficient plan accepts provider API keys only" }, 400);
+  }
+
   const supportedModels = await getSupportedProviderModels();
-  if (!supportedModels[provider].some((m) => m.id === model)) {
+  if (!supportedModels[modelProvider].some((m) => m.id === model)) {
     return c.json({ error: "Selected model is not supported" }, 400);
   }
 
@@ -173,39 +168,24 @@ settingsRoutes.put("/ai-config", async (c) => {
     return c.json({ error: "Credential is required" }, 400);
   }
 
-  if (refreshToken !== undefined && typeof refreshToken !== "string") {
-    return c.json({ error: "refreshToken must be a string" }, 400);
+  if (modelProvider === "anthropic" && !credential.startsWith("sk-ant-")) {
+    return c.json({ error: "Invalid Anthropic API key format" }, 400);
   }
 
-  if (accountId !== undefined && typeof accountId !== "string") {
-    return c.json({ error: "accountId must be a string" }, 400);
-  }
-
-  if (authMethod === "API_KEY" && requiresOAuth(model)) {
-    return c.json({ error: "Codex 5.3 requires OAuth token authentication" }, 400);
-  }
-
-  if (authMethod === "API_KEY") {
-    if (provider === "anthropic" && !credential.startsWith("sk-ant-")) {
-      return c.json({ error: "Invalid Anthropic API key format" }, 400);
-    }
-
-    if (provider === "openai" && !credential.startsWith("sk-")) {
-      return c.json({ error: "Invalid OpenAI API key format" }, 400);
-    }
+  if (modelProvider === "openai" && !credential.startsWith("sk-")) {
+    return c.json({ error: "Invalid OpenAI API key format" }, 400);
   }
 
   await prisma.organization.update({
     where: { id: org.id },
     data: {
-      aiAuthMethod: authMethod,
+      aiAuthMethod: "API_KEY",
       aiModel: model,
-      aiApiKey: authMethod === "API_KEY" ? credential : null,
-      aiOauthToken: authMethod === "OAUTH_TOKEN" ? credential : null,
-      aiOauthRefreshToken: authMethod === "OAUTH_TOKEN" ? (refreshToken || null) : null,
-      aiOauthAccountId: authMethod === "OAUTH_TOKEN" ? (accountId || null) : null,
-      anthropicApiKey:
-        authMethod === "API_KEY" && model.startsWith("anthropic/") ? credential : null,
+      aiApiKey: credential,
+      aiOauthToken: null,
+      aiOauthRefreshToken: null,
+      aiOauthAccountId: null,
+      anthropicApiKey: modelProvider === "anthropic" ? credential : null,
     },
   });
 
@@ -213,16 +193,16 @@ settingsRoutes.put("/ai-config", async (c) => {
     organizationId: org.id,
     userId: user.id,
     action: "api_key.updated",
-    metadata: { provider, authMethod, model },
+    metadata: { provider: modelProvider, authMethod: "API_KEY", model },
     c,
   });
 
   return c.json({
     success: true,
-    provider,
-    authMethod,
+    provider: modelProvider,
+    authMethod: "API_KEY",
     model,
-    maskedCredential: maskCredential(authMethod, credential),
+    maskedCredential: maskCredential(credential),
   });
 });
 

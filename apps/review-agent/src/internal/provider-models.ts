@@ -1,5 +1,5 @@
 import { createOpencode } from "@opencode-ai/sdk";
-import { loadOpencodeOauthCredentials } from "../utils/opencode-auth";
+import { loadOpencodeOauthCredentials, shouldUseOpencodeAuthJson } from "../utils/opencode-auth";
 
 export interface ProviderModelOption {
   id: string;
@@ -81,31 +81,33 @@ export async function getProviderModelsCatalog(): Promise<ProviderModelsCatalog>
   }
 
   const providerConfig: Record<string, unknown> = {};
-  const openaiOauth = loadOpencodeOauthCredentials("openai");
-  const anthropicOauth = loadOpencodeOauthCredentials("anthropic");
+  const openaiCredential = shouldUseOpencodeAuthJson()
+    ? loadOpencodeOauthCredentials("openai")?.accessToken
+    : process.env.OPENAI_API_KEY?.trim();
+  const anthropicCredential = shouldUseOpencodeAuthJson()
+    ? loadOpencodeOauthCredentials("anthropic")?.accessToken
+    : process.env.ANTHROPIC_API_KEY?.trim();
 
-  if (openaiOauth?.accessToken) {
-    providerConfig.openai = { options: { apiKey: openaiOauth.accessToken } };
+  if (openaiCredential) {
+    providerConfig.openai = { options: { apiKey: openaiCredential } };
   }
-  if (anthropicOauth?.accessToken) {
-    providerConfig.anthropic = { options: { apiKey: anthropicOauth.accessToken } };
+  if (anthropicCredential) {
+    providerConfig.anthropic = { options: { apiKey: anthropicCredential } };
   }
 
   let opencode: Awaited<ReturnType<typeof createOpencode>> | null = null;
   try {
-    opencode = await createOpencode(
-      {
-        port: 0,
-        timeout: PROVIDER_MODEL_SERVER_TIMEOUT_MS,
-        ...(Object.keys(providerConfig).length > 0
-          ? {
-              config: {
-                provider: providerConfig,
-              },
-            }
-          : {}),
-      } as Parameters<typeof createOpencode>[0]
-    );
+    opencode = await createOpencode({
+      port: 0,
+      timeout: PROVIDER_MODEL_SERVER_TIMEOUT_MS,
+      ...(Object.keys(providerConfig).length > 0
+        ? {
+            config: {
+              provider: providerConfig,
+            },
+          }
+        : {}),
+    } as Parameters<typeof createOpencode>[0]);
 
     const result = (await opencode.client.provider.list()) as unknown as {
       data?: unknown;

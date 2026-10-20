@@ -9,7 +9,8 @@ import {
 import { Checkbox } from "components/components/ui/checkbox";
 import { Label } from "components/components/ui/label";
 import { LoadingButton } from "components/components/ui/loading-button";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useCallback, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useNavigationConfig } from "../../navigation";
@@ -57,7 +58,7 @@ export function OnboardingPage() {
   if (isLoading || isSubmitting) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
       </div>
     );
   }

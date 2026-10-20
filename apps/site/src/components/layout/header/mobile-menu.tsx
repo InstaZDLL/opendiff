@@ -12,7 +12,7 @@ interface MobileMenuProps {
 /** Expandable mobile navigation menu */
 export function MobileMenu({ onClose }: MobileMenuProps) {
   return (
-    <div className="md:hidden h-screen fixed inset-0 z-40 bg-background p-1.5 pt-16">
+    <div className="md:hidden h-screen fixed inset-0 z-40 bg-background p-1.5 pt-28">
       <nav className="flex flex-col gap-2">
         {MOBILE_NAV_LINKS.map((link) =>
           isExternalLink(link.href) ? (

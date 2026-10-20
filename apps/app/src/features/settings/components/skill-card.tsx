@@ -1,7 +1,8 @@
 import type { Skill } from "@/features/settings";
 import { Button } from "components/components/ui/button";
 import { Separator } from "components/components/ui/separator";
-import { Pencil, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon, PencilIcon } from "@hugeicons/core-free-icons";
 
 interface SkillCardProps {
   skill: Skill;
@@ -22,10 +23,10 @@ export function SkillCard({ skill, showSeparator, onEdit, onDelete }: SkillCardP
         </div>
         <div className="flex items-center gap-2 ml-4 shrink-0">
           <Button size="icon" variant="outline" onClick={() => onEdit(skill)}>
-            <Pencil className="size-4" />
+            <HugeiconsIcon icon={PencilIcon} className="size-4" />
           </Button>
           <Button size="icon" variant="outline" onClick={() => onDelete(skill)}>
-            <Trash2 className="size-4" />
+            <HugeiconsIcon icon={Delete02Icon} className="size-4" />
           </Button>
         </div>
       </div>

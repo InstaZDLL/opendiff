@@ -8,7 +8,8 @@ import {
   DialogTitle,
 } from "components/components/ui/dialog";
 import { Input } from "components/components/ui/input";
-import { Check, Copy } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckIcon, CopyIcon } from "@hugeicons/core-free-icons";
 import { useRef, useState } from "react";
 
 interface InviteLinkDialogProps {
@@ -60,7 +61,7 @@ export function InviteLinkDialog({ open, onOpenChange, inviteLink }: InviteLinkD
             size="icon"
             onClick={handleCopy}
           >
-            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copied ? <HugeiconsIcon icon={CheckIcon} className="h-4 w-4" /> : <HugeiconsIcon icon={CopyIcon} className="h-4 w-4" />}
           </Button>
           <div className="h-9 w-6 bg-gradient-to-r from-transparent to-background absolute top-1 bottom-0 right-10" />
         </div>

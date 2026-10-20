@@ -1,3 +1,16 @@
 @import "components/styles";
 
 @source "../src";
+@source "../../../packages/shared/src";
+@source "../../../packages/components/src";
+
+/* Letters of the rotating hero word: rise in from below, leave upwards, blurring at the ends */
+@keyframes word-letter-in {
+  from { transform: translateY(0.24em); opacity: 0; filter: blur(4px); }
+  to { transform: none; opacity: 1; filter: blur(0); }
+}
+
+@keyframes word-letter-out {
+  from { transform: none; opacity: 1; filter: blur(0); }
+  to { transform: translateY(-0.24em); opacity: 0; filter: blur(4px); }
+}

@@ -19,7 +19,8 @@ import {
   TableRow,
 } from "components/components/ui/table";
 import { useDebounce } from "components/hooks";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { useAuth } from "shared/auth";
 import { useOrganization } from "shared/organizations";
@@ -207,7 +208,7 @@ function PaginatedLogTable({ search }: PaginatedLogTableProps) {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
             >
-              <ChevronLeft className="size-4" />
+              <HugeiconsIcon icon={ChevronLeftIcon} className="size-4" />
             </Button>
             <span className="text-sm text-muted-foreground px-2">
               Page {pagination.page} of {pagination.totalPages}
@@ -218,7 +219,7 @@ function PaginatedLogTable({ search }: PaginatedLogTableProps) {
               onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
               disabled={page === pagination.totalPages}
             >
-              <ChevronRight className="size-4" />
+              <HugeiconsIcon icon={ChevronRightIcon} className="size-4" />
             </Button>
           </div>
         </div>

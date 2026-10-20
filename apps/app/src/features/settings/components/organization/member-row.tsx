@@ -11,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "components/components/ui/dropdown-menu";
 import { TableCell, TableRow } from "components/components/ui/table";
-import { EllipsisVertical, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon, EllipsisVerticalIcon } from "@hugeicons/core-free-icons";
 import type { OrganizationRole } from "shared/auth";
 import { formatRoleName } from "shared/billing";
 import { SeatBadge } from "./seat-badge";
@@ -93,7 +94,7 @@ export function MemberRow({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-md">
-                  <EllipsisVertical className="size-4" />
+                  <HugeiconsIcon icon={EllipsisVerticalIcon} className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -148,7 +149,7 @@ export function MemberRow({
                     className="text-destructive"
                     onClick={() => onRemoveMember(member.userId)}
                   >
-                    <Trash2 className="size-4" />
+                    <HugeiconsIcon icon={Delete02Icon} className="size-4" />
                     Remove
                   </DropdownMenuItem>
                 )}

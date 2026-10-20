@@ -1,4 +1,4 @@
-export type AiAuthMethod = "API_KEY" | "OAUTH_TOKEN";
+export type AiAuthMethod = "API_KEY";
 export type AiProvider = "anthropic" | "openai";
 
 export interface AiModelOption {
@@ -14,8 +14,6 @@ export interface AiConfigStatus {
   model: string;
   maskedCredential: string | null;
   tier: string;
-  hasRefreshToken: boolean;
-  hasAccountId: boolean;
 }
 
 // Custom review rules types

@@ -10,7 +10,7 @@ export const TIER_HIERARCHY: Record<string, number> = {
 // Monthly token quota per seat tier (-1 = unlimited)
 export const TIER_MONTHLY_TOKEN_QUOTA: Record<string, number> = {
   FREE: 0,
-  SELF_SUFFICIENT: -1, // Unlimited (user pays Anthropic directly)
+  SELF_SUFFICIENT: -1, // Unlimited (user pays selected provider directly)
   PRO: 2_500_000,
   ULTRA: 8_000_000,
 };

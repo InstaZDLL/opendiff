@@ -31,8 +31,8 @@ export async function generateReviewSummary(
 ): Promise<GenerateSummaryResult> {
   const aiConfig = await getOrgAiRuntimeConfig(input.orgId);
 
-  // aiConfig is null when org hasn't configured BYOK credentials — fall through
-  // to let the review-agent use platform-default credentials from env vars.
+  // aiConfig is null only for active non-BYOK paid plans; the review-agent
+  // will use OpenDiff provider API keys from env vars.
 
   return await postToReviewAgent<GenerateSummaryResult>("/internal/generate-summary", {
     ...input,

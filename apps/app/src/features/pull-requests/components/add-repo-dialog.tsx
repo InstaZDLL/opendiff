@@ -8,7 +8,8 @@ import {
   DialogTitle,
 } from "components/components/ui/dialog";
 import { SearchBar } from "components/components/ui/search-bar";
-import { Loader2, LogIn } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon, LogInIcon } from "@hugeicons/core-free-icons";
 import { Link } from "react-router-dom";
 import { RepoListItem } from "./repo-list-item";
 
@@ -76,7 +77,7 @@ export function AddRepoDialog({
 
         {!hasAccessToken ? (
           <Button variant="outline" onClick={onLogout}>
-            <LogIn className="size-4" />
+            <HugeiconsIcon icon={LogInIcon} className="size-4" />
             Log out to re-authenticate
           </Button>
         ) : needsGithubLink ? (
@@ -91,10 +92,10 @@ export function AddRepoDialog({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
             />
-            <div className="max-h-80 bg-background overflow-y-auto rounded-none py-2.5">
+            <div className="max-h-80 bg-background overflow-y-auto rounded-md py-2.5">
               {isLoading && (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                  <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin text-muted-foreground" />
                 </div>
               )}
               {!isLoading && repositories.length === 0 && (

@@ -11,7 +11,8 @@ import {
 import { Button } from "components/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "components/components/ui/card";
 import { Skeleton } from "components/components/ui/skeleton";
-import { Download, Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Download04Icon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "shared/auth";
@@ -121,7 +122,7 @@ export function BillingPage() {
                       <Button onClick={handleResubscribe} disabled={resubscribe.isPending}>
                         {resubscribe.isPending ? (
                           <>
-                            <Loader2 className="size-4 animate-spin" />
+                            <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
                             Reactivating...
                           </>
                         ) : (
@@ -140,7 +141,7 @@ export function BillingPage() {
                         >
                           {cancelSubscription.isPending ? (
                             <>
-                              <Loader2 className="size-4 animate-spin mr-2" />
+                              <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin mr-2" />
                               Cancelling...
                             </>
                           ) : (
@@ -266,9 +267,9 @@ export function BillingPage() {
                             disabled={downloadingInvoice === order.id}
                           >
                             {downloadingInvoice === order.id ? (
-                              <Loader2 className="size-4 animate-spin" />
+                              <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
                             ) : (
-                              <Download className="size-4" />
+                              <HugeiconsIcon icon={Download04Icon} className="size-4" />
                             )}
                           </Button>
                         </td>

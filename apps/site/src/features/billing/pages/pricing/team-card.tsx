@@ -2,7 +2,8 @@ import NumberFlow from "@number-flow/react";
 import { Button } from "components/components/ui/button";
 import { Input } from "components/components/ui/input";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckIcon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { formatTokenQuota } from "shared/billing";
 
@@ -32,19 +33,19 @@ export function TeamCard({ isYearly, onGetStarted, isLoading }: TeamCardProps) {
           </p>
           <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
             <li className="flex items-center gap-1.5 text-sm">
-              <Check className="size-4 text-green-600 dark:text-green-400" />
+              <HugeiconsIcon icon={CheckIcon} className="size-4 text-green-600 dark:text-green-400" />
               <span>Unlimited repositories</span>
             </li>
             <li className="flex items-center gap-1.5 text-sm">
-              <Check className="size-4 text-green-600 dark:text-green-400" />
+              <HugeiconsIcon icon={CheckIcon} className="size-4 text-green-600 dark:text-green-400" />
               <span>Priority support</span>
             </li>
             <li className="flex items-center gap-1.5 text-sm">
-              <Check className="size-4 text-green-600 dark:text-green-400" />
+              <HugeiconsIcon icon={CheckIcon} className="size-4 text-green-600 dark:text-green-400" />
               <span>Auto-fix</span>
             </li>
             <li className="flex items-center gap-1.5 text-sm">
-              <Check className="size-4 text-green-600 dark:text-green-400" />
+              <HugeiconsIcon icon={CheckIcon} className="size-4 text-green-600 dark:text-green-400" />
               <span>Shared review pool</span>
             </li>
           </ul>
@@ -107,7 +108,7 @@ export function TeamCard({ isYearly, onGetStarted, isLoading }: TeamCardProps) {
           </div>
 
           <Button size="lg" disabled={isLoading} onClick={() => onGetStarted(seatCount)}>
-            {isLoading && <Loader2 className="size-4 animate-spin" />}
+            {isLoading && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
             Get started with {seatCount} seats
           </Button>
         </div>

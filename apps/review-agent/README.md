@@ -25,8 +25,10 @@ Copy `.env.example` to `.env` and configure values.
 | Variable | Required | Notes |
 |---|---|---|
 | `GITHUB_WEBHOOK_SECRET` | Yes | Validates webhook signatures. |
-| `OPENCODE_OAUTH_TOKEN` or (`ANTHROPIC_API_KEY` / `OPENAI_API_KEY`) | Yes* | Default credential source used by OpenCode when org-level BYOK config is not set. |
-| `OPENAI_OAUTH_TOKEN`, `ANTHROPIC_OAUTH_TOKEN` | Optional | Provider-specific OAuth token overrides when not using `OPENCODE_OAUTH_TOKEN`. |
+| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` | Yes* | OpenDiff-owned provider API keys used for active paid non-BYOK plans. The selected model provider determines which key is used. |
+| `OPENCODE_USE_AUTH_JSON` | Optional | Debug override. When truthy, OpenCode uses `auth.json` for all plans instead of org BYOK keys or OpenDiff provider API keys. |
+| `OPENCODE_AUTH_PATH` | Optional | Path to the OpenCode `auth.json` file when `OPENCODE_USE_AUTH_JSON` is enabled. |
+| `OPENCODE_MODEL` | Optional | Default model when org-level config is absent, or the debug `auth.json` override is enabled. |
 | `GITHUB_APP_ID` + (`GITHUB_PRIVATE_KEY` or `GITHUB_PRIVATE_KEY_PATH`) | Recommended | Preferred GitHub auth mode. Required for `fix-accepted` callback. |
 | `GITHUB_TOKEN` | Fallback | Used only when GitHub App auth is not configured. |
 | `BOT_USERNAME` | Optional | Defaults to `opendiff-bot`. |
@@ -39,13 +41,15 @@ Copy `.env.example` to `.env` and configure values.
 | `REVIEW_QUEUE_MAX_ATTEMPTS` | Optional | Attempts per queued full PR review. Defaults to `2`. |
 | `REVIEW_QUEUE_RETRY_DELAY_MS` | Optional | Delay before retrying a failed queued review. Defaults to `15000`. |
 
-\* At least one default credential should be set for non-Self-sufficient organizations.
+\* Set the provider keys for every non-BYOK model provider you enable.
 
 Important behavior:
 
 - If `SETTINGS_API_URL` is missing, repository features are treated as disabled (`effectiveEnabled=false`).
 - If both GitHub App and token auth are set, GitHub App auth is preferred for webhook processing.
-- For Self-sufficient organizations, review-agent reads org-level auth method, model, and credential from BFF internal APIs.
+- For Self-sufficient organizations, review-agent reads the org-level model and matching provider API key from BFF internal APIs.
+- For active Pro/Ultra organizations, review-agent uses OpenDiff-owned provider API keys from env vars.
+- If `OPENCODE_USE_AUTH_JSON` is enabled, `auth.json` overrides both of those credential paths for debugging.
 
 ## Local development
 

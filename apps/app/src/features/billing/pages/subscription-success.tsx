@@ -1,5 +1,6 @@
 import { Button } from "components/components/ui/button";
-import { CheckCircle, Loader2, XCircle } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CancelCircleIcon, CheckmarkCircle02Icon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "shared/auth";
@@ -101,7 +102,7 @@ export function SubscriptionSuccessPage() {
         <div className="rounded-xl border border-border bg-card p-8 text-center">
           {status === "polling" && (
             <>
-              <Loader2 className="size-12 animate-spin text-primary mx-auto mb-4" />
+              <HugeiconsIcon icon={Loading03Icon} className="size-12 animate-spin text-primary mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-2">Processing your subscription</h1>
               <p className="text-muted-foreground mb-4">
                 Please wait while we confirm your payment...
@@ -114,7 +115,7 @@ export function SubscriptionSuccessPage() {
 
           {status === "success" && (
             <>
-              <CheckCircle className="size-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
+              <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-2">Subscription activated!</h1>
               <p className="text-muted-foreground mb-4">
                 Thank you for subscribing. Redirecting you to the console...
@@ -124,7 +125,7 @@ export function SubscriptionSuccessPage() {
 
           {status === "timeout" && (
             <>
-              <XCircle className="size-12 text-amber-600 dark:text-amber-400 mx-auto mb-4" />
+              <HugeiconsIcon icon={CancelCircleIcon} className="size-12 text-amber-600 dark:text-amber-400 mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-2">Taking longer than expected</h1>
               <p className="text-muted-foreground mb-4">
                 Your payment may still be processing. You can try refreshing or check back later.

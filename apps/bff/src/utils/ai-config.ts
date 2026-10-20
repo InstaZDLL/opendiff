@@ -1,6 +1,6 @@
 import { prisma } from "../db";
 
-export type AiAuthMethod = "API_KEY" | "OAUTH_TOKEN";
+export type AiAuthMethod = "API_KEY";
 
 export interface AiRuntimeConfig {
   authMethod: AiAuthMethod;
@@ -17,10 +17,9 @@ export async function getOrgAiRuntimeConfig(orgId: string): Promise<AiRuntimeCon
       aiAuthMethod: true,
       aiModel: true,
       aiApiKey: true,
-      aiOauthToken: true,
-      aiOauthRefreshToken: true,
-      aiOauthAccountId: true,
       anthropicApiKey: true,
+      subscriptionTier: true,
+      subscriptionStatus: true,
     },
   });
 
@@ -28,24 +27,23 @@ export async function getOrgAiRuntimeConfig(orgId: string): Promise<AiRuntimeCon
     return null;
   }
 
-  const authMethod = org.aiAuthMethod as AiAuthMethod | null;
-  if (authMethod === "OAUTH_TOKEN") {
-    if (!org.aiOauthToken || !org.aiModel) {
-      return null;
-    }
-    return {
-      authMethod,
-      model: org.aiModel,
-      credential: org.aiOauthToken,
-      ...(org.aiOauthRefreshToken ? { refreshToken: org.aiOauthRefreshToken } : {}),
-      ...(org.aiOauthAccountId ? { accountId: org.aiOauthAccountId } : {}),
-    };
+  const hasActiveSubscription = org.subscriptionStatus === "ACTIVE";
+  const hasOpenDiffPaidTier =
+    (org.subscriptionTier === "PRO" || org.subscriptionTier === "ULTRA") && hasActiveSubscription;
+
+  if (hasOpenDiffPaidTier) {
+    return null;
   }
 
+  if (org.subscriptionTier !== "SELF_SUFFICIENT" || !hasActiveSubscription) {
+    throw new Error("Organization does not have an active paid AI plan");
+  }
+
+  const authMethod = org.aiAuthMethod as AiAuthMethod | null;
   if (authMethod === "API_KEY") {
     const credential = org.aiApiKey || org.anthropicApiKey;
     if (!credential || !org.aiModel) {
-      return null;
+      throw new Error("No BYOK API key configured for Self-sufficient organization");
     }
     return {
       authMethod,
@@ -62,5 +60,5 @@ export async function getOrgAiRuntimeConfig(orgId: string): Promise<AiRuntimeCon
     };
   }
 
-  return null;
+  throw new Error("No BYOK API key configured for Self-sufficient organization");
 }

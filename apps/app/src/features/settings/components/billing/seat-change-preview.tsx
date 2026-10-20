@@ -7,7 +7,8 @@ import {
 } from "components/components/ui/card";
 import { Separator } from "components/components/ui/separator";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { formatCents } from "shared/billing";
 
 /** Props for SeatChangePreview including proration preview data and seat pricing. */
@@ -53,7 +54,7 @@ export function SeatChangePreview({
             <CardContent>
               {isLoadingPreview ? (
                 <div className="flex items-center gap-2">
-                  <Loader2 className="size-4 animate-spin" />
+                  <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
                   <span className="text-sm text-muted-foreground">Calculating proration...</span>
                 </div>
               ) : preview ? (

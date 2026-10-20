@@ -38,7 +38,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
         )}
 
         <p className="text-sm text-muted-foreground">
-          <span className="text-primary">Comparisons</span>
+          <span className="text-foreground">Comparisons</span>
           <span className="mx-2">·</span>
           <span>Updated on {updatedLabel}</span>
         </p>

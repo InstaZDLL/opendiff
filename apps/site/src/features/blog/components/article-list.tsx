@@ -1,4 +1,5 @@
-import { LoaderCircle } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { LoaderCircleIcon } from "@hugeicons/core-free-icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BLOG_CHUNK_SIZE } from "../constants";
 import type { ArticleListProps } from "../types";
@@ -52,7 +53,7 @@ export function ArticleList({ articles }: ArticleListProps) {
 
       {hasMore && (
         <div ref={sentinelRef} className="mt-8 flex w-full justify-center">
-          <LoaderCircle className="h-5 w-5 animate-spin text-muted-foreground" />
+          <HugeiconsIcon icon={LoaderCircleIcon} className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       )}
     </section>

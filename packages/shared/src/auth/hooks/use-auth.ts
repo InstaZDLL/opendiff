@@ -113,6 +113,46 @@ export function useAuth() {
     window.location.href = url.toString();
   };
 
+  /** Email a one-time sign-in code and link. Resolves to an error message, or null on success. */
+  const startEmailLogin = async (
+    email: string,
+    redirectUrl?: string,
+    turnstileToken?: string
+  ): Promise<string | null> => {
+    try {
+      const response = await fetch(`${API_URL}/auth/email/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, redirectUrl, turnstileToken }),
+      });
+      if (response.ok) return null;
+      const body = await response.json().catch(() => ({}));
+      return body.error || "Couldn't send the code. Please try again.";
+    } catch {
+      return "Couldn't send the code. Please try again.";
+    }
+  };
+
+  /** Exchange an emailed code (with its email) or link token for a signed-in user. */
+  const verifyEmailLogin = async (
+    credentials: { email: string; code: string } | { token: string }
+  ): Promise<{ user: User } | { error: string }> => {
+    try {
+      const response = await fetch(`${API_URL}/auth/email/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        return { error: body.error || "Sign-in failed. Please try again." };
+      }
+      return { user: body as User };
+    } catch {
+      return { error: "Sign-in failed. Please try again." };
+    }
+  };
+
   // Mark that we're adding an account (call before login)
   const setAddingAccount = () => {
     sessionStorage.setItem("opendiff_add_account", "true");
@@ -234,8 +274,8 @@ export function useAuth() {
   // Refresh an account's access token using the stored refresh token
   // Returns the updated account with new token, or null if refresh failed
   const refreshAccountToken = async (account: User): Promise<User | null> => {
-    // GitHub tokens don't expire, so no refresh needed
-    if (account.auth_provider === "github") {
+    // GitHub tokens don't expire and email sessions last 30 days, so no refresh needed
+    if (account.auth_provider === "github" || account.auth_provider === "email") {
       return account;
     }
 
@@ -298,6 +338,8 @@ export function useAuth() {
     isAuthenticated: !!user,
     login,
     loginWithGoogle,
+    startEmailLogin,
+    verifyEmailLogin,
     loginWithMicrosoft,
     setAddingAccount,
     switchAccount,

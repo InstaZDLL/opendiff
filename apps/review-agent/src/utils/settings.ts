@@ -1,5 +1,6 @@
 import type { CodeIssue, RepositorySettings } from "shared/types";
 import { buildIssueFingerprint } from "./issue-fingerprint";
+import { shouldUseOpencodeAuthJson } from "./opencode-auth";
 
 export type { RepositorySettings };
 
@@ -35,6 +36,13 @@ export function isSettingsApiUnavailableError(
   error: unknown
 ): error is SettingsApiUnavailableError {
   return error instanceof SettingsApiUnavailableError;
+}
+
+export class RuntimeAiConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "RuntimeAiConfigError";
+  }
 }
 
 function buildSettingsApiUrl(pathname: string): URL | null {
@@ -161,6 +169,10 @@ export async function getRuntimeAiConfig(
   repo: string,
   githubRepoId?: number
 ): Promise<RuntimeAiConfig | null> {
+  if (shouldUseOpencodeAuthJson()) {
+    return null;
+  }
+
   if (!SETTINGS_API_URL || !REVIEW_AGENT_API_KEY) {
     return null;
   }
@@ -180,10 +192,6 @@ export async function getRuntimeAiConfig(
       headers: headersWithApiKey(),
     });
 
-    if (!response.ok) {
-      return null;
-    }
-
     const data = (await response.json()) as {
       authMethod?: "API_KEY" | "OAUTH_TOKEN";
       model?: string;
@@ -191,14 +199,23 @@ export async function getRuntimeAiConfig(
       refreshToken?: string;
       accountId?: string;
       useDefault?: boolean;
+      error?: string;
     };
 
     if (data.useDefault) {
       return null;
     }
 
+    if (!response.ok) {
+      throw new RuntimeAiConfigError(
+        data.error || `Failed to fetch AI config (${response.status})`
+      );
+    }
+
     if (!data.authMethod || !data.model || !data.credential) {
-      return null;
+      throw new RuntimeAiConfigError(
+        data.error || "AI config response did not include credentials"
+      );
     }
 
     return {
@@ -209,6 +226,10 @@ export async function getRuntimeAiConfig(
       ...(data.accountId ? { accountId: data.accountId } : {}),
     };
   } catch (error) {
+    if (error instanceof RuntimeAiConfigError) {
+      throw error;
+    }
+
     console.warn(`Error fetching AI config for ${owner}/${repo}:`, error);
     return null;
   }

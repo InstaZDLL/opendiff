@@ -1,5 +1,6 @@
 import { Button, Popover, PopoverContent, PopoverTrigger } from "components/components";
-import { Bell, Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { BellIcon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "shared/auth";
@@ -129,7 +130,7 @@ export function NotificationPopover() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button size="icon" variant="ghost" className="relative text-muted-foreground">
-          <Bell />
+          <HugeiconsIcon icon={BellIcon} />
           {unreadCount > 0 && (
             <div className="absolute top-1.5 right-1.5 flex size-1.5 items-center justify-center rounded-full bg-blue-400" />
           )}
@@ -152,7 +153,7 @@ export function NotificationPopover() {
               {hasNextPage && <ScrollSentinel onVisible={loadMore} />}
               {isFetchingNextPage && (
                 <div className="py-3 flex justify-center">
-                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                  <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin text-muted-foreground" />
                 </div>
               )}
             </>

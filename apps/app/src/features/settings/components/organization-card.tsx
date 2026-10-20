@@ -10,7 +10,8 @@ import {
 import { Checkbox } from "components/components/ui/checkbox";
 import { Input } from "components/components/ui/input";
 import { Label } from "components/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useEffect, useState } from "react";
 import { useApi } from "shared/services";
 import { toast } from "sonner";
@@ -214,7 +215,7 @@ export function OrganizationCard({
         )}
 
         <Button className="w-fit" onClick={handleSave} disabled={!hasChanges || isSaving}>
-          {isSaving && <Loader2 className="size-4 animate-spin" />}
+          {isSaving && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
           {isSaving ? "Saving..." : "Save Changes"}
         </Button>
       </CardContent>

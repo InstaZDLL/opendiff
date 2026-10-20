@@ -24,6 +24,18 @@ export interface OpencodeOauthCredentials {
   expires?: number;
 }
 
+function isTruthyEnv(value: string | undefined): boolean {
+  if (!value) {
+    return false;
+  }
+
+  return ["1", "true", "yes", "on"].includes(value.trim().toLowerCase());
+}
+
+export function shouldUseOpencodeAuthJson(): boolean {
+  return isTruthyEnv(process.env.OPENCODE_USE_AUTH_JSON);
+}
+
 export function resolveOpencodeAuthPath(): string {
   const explicitPath = process.env.OPENCODE_AUTH_PATH?.trim();
   if (explicitPath) {

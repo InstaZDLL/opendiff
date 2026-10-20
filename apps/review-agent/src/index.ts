@@ -73,6 +73,8 @@ interface PullRequestWebhookPayload {
     title: string;
     body: string | null;
     draft?: boolean;
+    merged?: boolean;
+    merged_at?: string | null;
     head: { sha: string; ref: string };
     base: { sha: string; ref: string };
     user: { login: string };
@@ -805,6 +807,26 @@ app.post("/internal/generate-summary", async (c) => {
 });
 
 // Webhook endpoint
+/** Tell the server a pull request was merged; failures are logged and otherwise ignored. */
+async function notifyPullRequestMerged(merge: {
+  owner: string;
+  repo: string;
+  pullNumber: number;
+  mergedAt: string;
+}) {
+  const SETTINGS_API_URL = process.env.SETTINGS_API_URL;
+  if (!SETTINGS_API_URL) return;
+  try {
+    await fetch(`${SETTINGS_API_URL}/api/internal/pull-requests/merged`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-API-Key": REVIEW_AGENT_API_KEY || "" },
+      body: JSON.stringify(merge),
+    });
+  } catch (err) {
+    console.warn(`Failed to notify server of merged PR ${merge.owner}/${merge.repo}#${merge.pullNumber}:`, err);
+  }
+}
+
 app.post("/webhook", async (c) => {
   // Validate signature
   const signature = c.req.header("x-hub-signature-256") || c.req.header("x-hub-signature") || "";
@@ -824,6 +846,17 @@ app.post("/webhook", async (c) => {
 
   // Handle pull request events
   if (event === "pull_request") {
+    // Count merged pull requests that Contrast reviewed (for the public stats)
+    if (payload.action === "closed" && payload.pull_request?.merged && hasRepositoryIdentity(payload)) {
+      void notifyPullRequestMerged({
+        owner: payload.repository.owner.login,
+        repo: payload.repository.name,
+        pullNumber: payload.pull_request.number,
+        mergedAt: payload.pull_request.merged_at ?? new Date().toISOString(),
+      });
+      return c.json({ status: "recorded_merge" });
+    }
+
     const triggerActions = ["opened", "synchronize", "ready_for_review", "review_requested"];
 
     if (triggerActions.includes(payload.action)) {

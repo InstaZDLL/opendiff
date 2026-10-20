@@ -1,7 +1,8 @@
 import { Button } from "components/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "components/components/ui/card";
 import { Skeleton } from "components/components/ui/skeleton";
-import { Download, Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Download04Icon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import type { useAuth } from "shared/auth";
 import { formatCurrency, formatDate } from "shared/billing";
@@ -100,9 +101,9 @@ export function BillingHistoryCard({ user, orgId, isSoloUser }: BillingHistoryCa
                         disabled={downloadingInvoice === order.id}
                       >
                         {downloadingInvoice === order.id ? (
-                          <Loader2 className="size-4 animate-spin" />
+                          <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
                         ) : (
-                          <Download className="size-4" />
+                          <HugeiconsIcon icon={Download04Icon} className="size-4" />
                         )}
                       </Button>
                     </td>

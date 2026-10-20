@@ -1,4 +1,5 @@
-import { ArrowRight } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight02Icon } from "@hugeicons/core-free-icons";
 
 const steps = [
   {
@@ -56,7 +57,7 @@ export function ProcessSection() {
                   </div>
 
                   {index < steps.length - 1 && (
-                    <ArrowRight className="lg:hidden size-4 text-muted-foreground" />
+                    <HugeiconsIcon icon={ArrowRight02Icon} className="lg:hidden size-4 text-muted-foreground" />
                   )}
 
                   <div className="lg:mt-6">

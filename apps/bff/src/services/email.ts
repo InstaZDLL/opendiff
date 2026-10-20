@@ -107,3 +107,70 @@ If you didn't expect this invitation, you can safely ignore this email.
     return { success: false, error: String(error) };
   }
 }
+
+interface SendLoginEmailParams {
+  to: string;
+  code: string;
+  linkUrl: string;
+}
+
+/** Email a one-time sign-in code and link. Logs both instead when Resend is not configured. */
+export async function sendLoginEmail({
+  to,
+  code,
+  linkUrl,
+}: SendLoginEmailParams): Promise<{ success: boolean; error?: string }> {
+  if (!resend) {
+    console.log(`[Email] Resend not configured. Sign-in code for ${to}: ${code}`);
+    console.log(`[Email] Sign-in link: ${linkUrl}`);
+    return { success: false, error: "Email service not configured" };
+  }
+
+  try {
+    const safeCode = escapeHtml(code);
+
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: `${code} is your Contrast sign-in code`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111; max-width: 480px; margin: 0 auto; padding: 32px 20px;">
+  <h1 style="font-size: 20px; font-weight: 600; margin: 0 0 16px;">Sign in to Contrast</h1>
+  <p style="margin: 0 0 16px;">Enter this code on the sign-in page:</p>
+  <p style="font-size: 32px; font-weight: 600; letter-spacing: 6px; margin: 0 0 24px;">${safeCode}</p>
+  <p style="margin: 0 0 24px;">Or sign in with one click:</p>
+  <p style="margin: 0 0 32px;">
+    <a href="${linkUrl}" style="background: #111; color: #fff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-block;">Sign in to Contrast</a>
+  </p>
+  <p style="color: #6b7280; font-size: 13px; margin: 0;">The code and link expire in 10 minutes. If you didn't try to sign in, you can ignore this email.</p>
+</body>
+</html>
+      `.trim(),
+      text: `
+Sign in to Contrast
+
+Your sign-in code: ${code}
+
+Or open this link to sign in: ${linkUrl}
+
+The code and link expire in 10 minutes. If you didn't try to sign in, you can ignore this email.
+      `.trim(),
+    });
+
+    if (error) {
+      console.error("Failed to send sign-in email:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to send sign-in email:", error);
+    return { success: false, error: String(error) };
+  }
+}

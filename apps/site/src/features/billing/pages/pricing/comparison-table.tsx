@@ -1,6 +1,7 @@
 import { Badge } from "components";
 import { Button } from "components/components/ui/button";
-import { Check, X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckIcon, XIcon } from "@hugeicons/core-free-icons";
 import type { SubscriptionTier } from "shared/auth";
 import { plans } from "shared/billing";
 
@@ -34,7 +35,7 @@ export function ComparisonTable({
           <col className="w-[25%]" />
           <col className="w-[25%]" />
         </colgroup>
-        <thead className="sticky top-0 z-10 bg-background">
+        <thead className="sticky top-27 z-10 bg-background">
           <tr>
             <th
               rowSpan={3}
@@ -53,8 +54,8 @@ export function ComparisonTable({
                 className={`text-left text-lg font-normal ${plan.popular ? "bg-card" : "bg-background"}`}
               >
                 <div className="px-6 pb-3 pt-6 flex items-center gap-3">
-                  <h3>{plan.name}</h3>
-                  {plan.popular && <Badge variant="secondary">Popular</Badge>}
+                  <h4>{plan.name}</h4>
+                  {plan.popular && <Badge>Popular</Badge>}
                 </div>
               </th>
             ))}
@@ -65,7 +66,7 @@ export function ComparisonTable({
                 key={plan.tier}
                 className={`text-left align-top text-2xl font-normal ${plan.popular ? "bg-card" : "bg-background"}`}
               >
-                <div className="px-6 pb-6">
+                <div className="px-6 pb-6 tracking-tight">
                   $
                   {isYearly
                     ? (Math.round((plan.yearlyPrice / 12) * 2) / 2).toFixed(2)
@@ -114,9 +115,9 @@ export function ComparisonTable({
                       className={`flex items-center px-6 ${isPopular && isLastRow ? "pt-3 pb-6" : ""}`}
                     >
                       {value === true ? (
-                        <Check className={`h-5 w-5 ${isPopular ? "text-foreground" : ""}`} />
+                        <HugeiconsIcon icon={CheckIcon} className={`h-5 w-5 ${isPopular ? "text-foreground" : ""}`} />
                       ) : value === false ? (
-                        <X className="h-5 w-5 text-muted-foreground" />
+                        <HugeiconsIcon icon={XIcon} className="h-5 w-5 text-muted-foreground" />
                       ) : (
                         <span className={isPopular ? "text-foreground" : "text-muted-foreground"}>
                           {value}

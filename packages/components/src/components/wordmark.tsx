@@ -1,3 +1,3 @@
 export function Wordmark() {
-  return <p className="text-xl tracking-tight">OpenDiff</p>;
+  return <h4 className="text-xl leading-none">Contrast</h4>;
 }

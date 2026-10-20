@@ -1,6 +1,6 @@
 export function PrivacyPolicyPage() {
   return (
-    <section className="relative lg:pt-40 md:pt-40 pt-32 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-20">
+    <section className="relative lg:pt-40 md:pt-40 pt-32 px-4 md:px-8 max-w-6xl mx-auto pb-20">
       <h1 className="text-4xl font-medium tracking-tight mb-2">
         Privacy Policy
       </h1>
@@ -8,7 +8,7 @@ export function PrivacyPolicyPage() {
         Last updated: February 16, 2026
       </p>
 
-      <div className="prose prose-invert max-w-none space-y-10 text-muted-foreground [&_h2]:text-foreground [&_h2]:text-2xl [&_h2]:font-medium [&_h2]:tracking-tight [&_h2]:mb-4 [&_h3]:text-foreground [&_h3]:text-lg [&_h3]:font-medium [&_h3]:mb-2 [&_p]:leading-7 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_li]:leading-7 [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-muted-foreground">
+      <div className="prose max-w-none space-y-10 text-muted-foreground [&_h2]:text-foreground [&_h2]:text-2xl [&_h2]:font-medium [&_h2]:tracking-tight [&_h2]:mb-4 [&_h3]:text-foreground [&_h3]:text-lg [&_h3]:font-medium [&_h3]:mb-2 [&_p]:leading-7 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_li]:leading-7 [&_li]:marker:text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-muted-foreground">
         <div>
           <h2>1. Introduction</h2>
           <p>
@@ -100,10 +100,11 @@ export function PrivacyPolicyPage() {
           </p>
           <ul>
             <li>
-              <strong>AI Providers</strong> — Code diffs are sent to Anthropic
-              for AI-powered analysis. If you use the Self-sufficient plan with
-              your own API key, your code is sent directly to Anthropic under
-              your own account and API terms.
+              <strong>AI Providers</strong> — Code diffs are sent to the AI
+              provider for your selected model for AI-powered analysis. If you
+              use the Self-sufficient plan with your own API key, your code is
+              sent directly to that provider under your own account and API
+              terms.
             </li>
             <li>
               <strong>GitHub</strong> — We interact with the GitHub API to read

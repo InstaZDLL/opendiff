@@ -2,10 +2,15 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { createOpencode } from "@opencode-ai/sdk";
-import { loadOpencodeOauthCredentials } from "./opencode-auth";
+import {
+  type OpencodeOauthCredentials,
+  loadOpencodeOauthCredentials,
+  shouldUseOpencodeAuthJson,
+} from "./opencode-auth";
 
 type PermissionMode = "read_only" | "read_write" | "no_tools";
 type OpenAiReasoningEffort = "none" | "minimal" | "low" | "medium" | "high" | "xhigh";
+type SupportedProvider = "anthropic" | "openai";
 
 export type AiAuthMethod = "API_KEY" | "OAUTH_TOKEN";
 
@@ -194,7 +199,7 @@ function errorFromOpenCodeInfo(info: unknown): Error | null {
   return new Error(`OpenCode provider error: ${message}`);
 }
 
-function providerFromModel(model: string): "anthropic" | "openai" | null {
+function providerFromModel(model: string): SupportedProvider | null {
   if (model.startsWith("anthropic/")) {
     return "anthropic";
   }
@@ -248,6 +253,49 @@ function providerOverridesForModel(model?: string): Record<string, unknown> | un
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function mergeProviderConfig(
+  provider: Record<string, unknown> | undefined,
+  overrides: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined {
+  if (!provider) {
+    return overrides;
+  }
+  if (!overrides) {
+    return provider;
+  }
+
+  const merged: Record<string, unknown> = { ...provider };
+  for (const [providerId, overrideValue] of Object.entries(overrides)) {
+    const existingValue = merged[providerId];
+    if (!isRecord(existingValue) || !isRecord(overrideValue)) {
+      merged[providerId] = overrideValue;
+      continue;
+    }
+
+    const existingOptions = isRecord(existingValue.options) ? existingValue.options : {};
+    const overrideOptions = isRecord(overrideValue.options) ? overrideValue.options : {};
+    const existingModels = isRecord(existingValue.models) ? existingValue.models : {};
+    const overrideModels = isRecord(overrideValue.models) ? overrideValue.models : {};
+
+    merged[providerId] = {
+      ...existingValue,
+      ...overrideValue,
+      ...(Object.keys(existingOptions).length > 0 || Object.keys(overrideOptions).length > 0
+        ? { options: { ...existingOptions, ...overrideOptions } }
+        : {}),
+      ...(Object.keys(existingModels).length > 0 || Object.keys(overrideModels).length > 0
+        ? { models: { ...existingModels, ...overrideModels } }
+        : {}),
+    };
+  }
+
+  return merged;
+}
+
 function opencodeServerTimeoutMs(): number {
   const raw = Number(process.env.OPENCODE_SERVER_TIMEOUT_MS?.trim() || "600000");
   return Number.isFinite(raw) && raw > 0 ? raw : 600000;
@@ -276,70 +324,110 @@ function withTimeout<T>(
   return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeout));
 }
 
-function providerConfigFromAiConfig(aiConfig: AiRuntimeConfig): Record<string, unknown> {
-  const provider = providerFromModel(aiConfig.model);
-
-  if (aiConfig.authMethod === "API_KEY") {
-    if (provider === "anthropic") {
-      return { anthropic: { options: { apiKey: aiConfig.credential } } };
-    }
-
-    if (provider === "openai") {
-      return { openai: { options: { apiKey: aiConfig.credential } } };
-    }
-
-    throw new Error(`Unsupported model provider for API key auth: ${aiConfig.model}`);
-  }
-
-  return {
-    anthropic: { options: { apiKey: aiConfig.credential } },
-    openai: { options: { apiKey: aiConfig.credential } },
-  };
+function providerConfigForCredential(
+  provider: SupportedProvider,
+  credential: string
+): Record<string, unknown> {
+  return { [provider]: { options: { apiKey: credential } } };
 }
 
-function providerConfigFromEnv(model?: string): Record<string, unknown> | undefined {
-  const sharedOauthToken = process.env.OPENCODE_OAUTH_TOKEN?.trim();
-  const openaiOauthToken = process.env.OPENAI_OAUTH_TOKEN?.trim();
-  const anthropicOauthToken = process.env.ANTHROPIC_OAUTH_TOKEN?.trim();
-  const openaiApiKey = process.env.OPENAI_API_KEY?.trim();
-  const anthropicApiKey = process.env.ANTHROPIC_API_KEY?.trim();
-
-  if (sharedOauthToken) {
-    return {
-      anthropic: { options: { apiKey: sharedOauthToken } },
-      openai: { options: { apiKey: sharedOauthToken } },
-    };
-  }
-
+function providerConfigFromCredentials(
+  credentials: Partial<Record<SupportedProvider, string>>,
+  model?: string
+): Record<string, unknown> | undefined {
   const provider = model ? providerFromModel(model) : null;
-  if (provider === "openai") {
-    const authFileToken = loadOpencodeOauthCredentials("openai")?.accessToken;
-    const token = openaiOauthToken || openaiApiKey || authFileToken;
-    return token ? { openai: { options: { apiKey: token } } } : undefined;
+
+  if (provider) {
+    const credential = credentials[provider];
+    return credential ? providerConfigForCredential(provider, credential) : undefined;
   }
 
-  if (provider === "anthropic") {
-    const authFileToken = loadOpencodeOauthCredentials("anthropic")?.accessToken;
-    const token = anthropicOauthToken || anthropicApiKey || authFileToken;
-    return token ? { anthropic: { options: { apiKey: token } } } : undefined;
-  }
-
-  const openaiToken =
-    openaiOauthToken || openaiApiKey || loadOpencodeOauthCredentials("openai")?.accessToken;
-  const anthropicToken =
-    anthropicOauthToken ||
-    anthropicApiKey ||
-    loadOpencodeOauthCredentials("anthropic")?.accessToken;
   const providerConfig: Record<string, unknown> = {};
-
-  if (openaiToken) {
-    providerConfig.openai = { options: { apiKey: openaiToken } };
-  }
-  if (anthropicToken) {
-    providerConfig.anthropic = { options: { apiKey: anthropicToken } };
+  for (const [providerId, credential] of Object.entries(credentials)) {
+    if (credential) {
+      providerConfig[providerId] = { options: { apiKey: credential } };
+    }
   }
 
   return Object.keys(providerConfig).length > 0 ? providerConfig : undefined;
+}
+
+function providerConfigFromAiConfig(aiConfig: AiRuntimeConfig): Record<string, unknown> {
+  const provider = providerFromModel(aiConfig.model);
+  if (!provider) {
+    throw new Error(`Unsupported model provider for AI config: ${aiConfig.model}`);
+  }
+
+  return providerConfigForCredential(provider, aiConfig.credential);
+}
+
+function providerConfigFromEnv(model?: string): Record<string, unknown> | undefined {
+  const openaiApiKey = process.env.OPENAI_API_KEY?.trim();
+  const anthropicApiKey = process.env.ANTHROPIC_API_KEY?.trim();
+
+  return providerConfigFromCredentials(
+    {
+      openai: openaiApiKey,
+      anthropic: anthropicApiKey,
+    },
+    model
+  );
+}
+
+function loadAuthJsonCredentialsByProvider(): Partial<
+  Record<SupportedProvider, OpencodeOauthCredentials>
+> {
+  return {
+    openai: loadOpencodeOauthCredentials("openai") ?? undefined,
+    anthropic: loadOpencodeOauthCredentials("anthropic") ?? undefined,
+  };
+}
+
+function providerConfigFromAuthJson(model?: string): Record<string, unknown> | undefined {
+  const credentialsByProvider = loadAuthJsonCredentialsByProvider();
+  const credentials = {
+    openai: credentialsByProvider.openai?.accessToken,
+    anthropic: credentialsByProvider.anthropic?.accessToken,
+  };
+
+  return providerConfigFromCredentials(credentials, model);
+}
+
+function writeTempAuthJsonForCredentials(
+  credentialsByProvider: Partial<Record<SupportedProvider, OpencodeOauthCredentials>>
+): { tempAuthDir: string; previousXdgDataHome: string | undefined } | null {
+  const authJson: Record<string, unknown> = {};
+
+  for (const [provider, credentials] of Object.entries(credentialsByProvider)) {
+    if (!credentials?.refreshToken) {
+      continue;
+    }
+
+    authJson[provider] = {
+      type: "oauth",
+      access: credentials.accessToken,
+      refresh: credentials.refreshToken,
+      accountId: credentials.accountId || "",
+      expires: credentials.expires || 0,
+    };
+  }
+
+  if (Object.keys(authJson).length === 0) {
+    return null;
+  }
+
+  const tempAuthDir = fs.mkdtempSync(path.join(os.tmpdir(), "opencode-auth-json-"));
+  const opencodeDir = path.join(tempAuthDir, "opencode");
+  fs.mkdirSync(opencodeDir, { recursive: true, mode: 0o700 });
+
+  fs.writeFileSync(path.join(opencodeDir, "auth.json"), JSON.stringify(authJson, null, 2), {
+    mode: 0o600,
+  });
+
+  const previousXdgDataHome = process.env.XDG_DATA_HOME;
+  process.env.XDG_DATA_HOME = tempAuthDir;
+
+  return { tempAuthDir, previousXdgDataHome };
 }
 
 export async function runOpencodePrompt(
@@ -355,13 +443,24 @@ export async function runOpencodePrompt(
       process.chdir(input.cwd);
 
       const model = input.aiConfig?.model || process.env.OPENCODE_MODEL?.trim() || undefined;
-      const envProvider = model ? providerFromModel(model) : null;
-      const envOauthCredentials =
-        !input.aiConfig && envProvider ? loadOpencodeOauthCredentials(envProvider) : null;
+      const useAuthJson = shouldUseOpencodeAuthJson();
 
-      // For BYOK OAuth users with refresh token, create a temp auth.json
-      // so the opencode CodexAuthPlugin can authenticate via the Codex auth flow
-      if (input.aiConfig?.authMethod === "OAUTH_TOKEN" && input.aiConfig.refreshToken) {
+      if (useAuthJson) {
+        const credentialsByProvider = loadAuthJsonCredentialsByProvider();
+        const authJsonProvider = model ? providerFromModel(model) : null;
+        const tempCredentials: Partial<Record<SupportedProvider, OpencodeOauthCredentials>> =
+          authJsonProvider
+            ? { [authJsonProvider]: credentialsByProvider[authJsonProvider] }
+            : credentialsByProvider;
+        const tempAuth = writeTempAuthJsonForCredentials(tempCredentials);
+        if (tempAuth) {
+          tempAuthDir = tempAuth.tempAuthDir;
+          originalXdgDataHome = tempAuth.previousXdgDataHome;
+        }
+      }
+      // Legacy support for previously stored OAuth configs. The Self-sufficient
+      // settings flow now writes provider API keys only.
+      else if (input.aiConfig?.authMethod === "OAUTH_TOKEN" && input.aiConfig.refreshToken) {
         tempAuthDir = fs.mkdtempSync(path.join(os.tmpdir(), "opencode-byok-"));
         const opencodeDir = path.join(tempAuthDir, "opencode");
         fs.mkdirSync(opencodeDir, { recursive: true, mode: 0o700 });
@@ -382,45 +481,17 @@ export async function runOpencodePrompt(
         originalXdgDataHome = process.env.XDG_DATA_HOME;
         process.env.XDG_DATA_HOME = tempAuthDir;
       }
-      // For default runtime auth backed by a mounted OpenCode auth.json, mirror that
-      // auth into a temp XDG data dir so the SDK can use refreshable OAuth state.
-      else if (envProvider && envOauthCredentials?.refreshToken) {
-        tempAuthDir = fs.mkdtempSync(path.join(os.tmpdir(), "opencode-env-"));
-        const opencodeDir = path.join(tempAuthDir, "opencode");
-        fs.mkdirSync(opencodeDir, { recursive: true, mode: 0o700 });
 
-        const authJson = {
-          [envProvider]: {
-            type: "oauth",
-            access: envOauthCredentials.accessToken,
-            refresh: envOauthCredentials.refreshToken,
-            accountId: envOauthCredentials.accountId || "",
-            expires: envOauthCredentials.expires || 0,
-          },
-        };
-        fs.writeFileSync(path.join(opencodeDir, "auth.json"), JSON.stringify(authJson, null, 2), {
-          mode: 0o600,
-        });
-
-        originalXdgDataHome = process.env.XDG_DATA_HOME;
-        process.env.XDG_DATA_HOME = tempAuthDir;
-      }
-
-      const provider = input.aiConfig
-        ? providerConfigFromAiConfig(input.aiConfig)
-        : providerConfigFromEnv(model);
+      const provider = useAuthJson
+        ? providerConfigFromAuthJson(model)
+        : input.aiConfig
+          ? providerConfigFromAiConfig(input.aiConfig)
+          : providerConfigFromEnv(model);
       const providerOverrides = providerOverridesForModel(model);
+      const mergedProvider = mergeProviderConfig(provider, providerOverrides);
       const config = {
         ...(model ? { model } : {}),
-        ...(provider ? { provider } : {}),
-        ...(providerOverrides
-          ? {
-              provider: {
-                ...((provider as Record<string, unknown> | undefined) ?? {}),
-                ...providerOverrides,
-              },
-            }
-          : {}),
+        ...(mergedProvider ? { provider: mergedProvider } : {}),
         permission: permissionForMode(input.mode),
       } as Record<string, unknown>;
 

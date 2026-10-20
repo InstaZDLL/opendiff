@@ -10,7 +10,8 @@ import {
 } from "components/components/ui/alert-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "components/components/ui/card";
 import { LoadingButton } from "components/components/ui/loading-button";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { useLeaveOrganization } from "shared/organizations";
 import { toast } from "sonner";
@@ -72,7 +73,7 @@ export function LeaveOrganizationCard({ orgId, orgName }: LeaveOrganizationCardP
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={handleLeave} variant="outline">
-              {leaveOrganization.isPending && <Loader2 className="size-4 animate-spin" />}
+              {leaveOrganization.isPending && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
               Leave Organization
             </AlertDialogAction>
             <AlertDialogCancel variant="default">Cancel</AlertDialogCancel>

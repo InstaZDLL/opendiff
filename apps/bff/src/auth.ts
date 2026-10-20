@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { findUserBySessionToken, isSessionToken } from "./sessions";
 
 export interface ProviderUser {
   id: number | string;
@@ -91,6 +92,10 @@ export async function findDbUser(providerUser: ProviderUser) {
 
 // Convenience: resolve an OAuth token directly to a database user
 export async function findDbUserFromToken(token: string) {
+  if (isSessionToken(token)) {
+    return findUserBySessionToken(token);
+  }
+
   const isGitHubToken = /^(gho_|ghu_|ghp_|github_pat_)/.test(token);
 
   if (isGitHubToken) {

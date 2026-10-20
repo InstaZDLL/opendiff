@@ -6,7 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "components/components/ui/dialog";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { RepoSettingsForm } from "./repo-settings-form";
 
 interface ConfigRepoDialogProps {
@@ -61,7 +62,7 @@ export function ConfigRepoDialog({
 
         {isLoadingSettings && (
           <div className="flex items-center justify-center py-6">
-            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            <HugeiconsIcon icon={Loading03Icon} className="size-6 animate-spin text-muted-foreground" />
           </div>
         )}
 

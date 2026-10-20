@@ -41,7 +41,7 @@ export const plans: Plan[] = [
     tier: "SELF_SUFFICIENT",
     monthlyPrice: 9,
     yearlyPrice: 90,
-    description: "Bring your own Anthropic API key",
+    description: "Bring your own provider API key",
     monthlyTokenQuota: -1,
     features: [
       { name: "Unlimited repositories", included: true },
@@ -60,7 +60,7 @@ export const plans: Plan[] = [
         name: "Requires your API key",
         included: true,
         tooltip:
-          "You'll need to provide your own Anthropic API key. You pay Anthropic directly for API usage.",
+          "You'll need to provide the API key for your selected model provider. You pay that provider directly for API usage.",
       },
       { name: "Custom review rules", included: true },
       {

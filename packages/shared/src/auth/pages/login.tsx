@@ -1,5 +1,6 @@
-import { Logo } from "components/components";
-import { Loader2 } from "lucide-react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "components/components";
 import { useState } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { useNavigationConfig } from "../../navigation";
@@ -26,7 +27,7 @@ export default function LoginPage() {
   if (isLoading) {
     return (
       <section className="w-screen h-screen flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
       </section>
     );
   }
@@ -38,23 +39,28 @@ export default function LoginPage() {
 
   const isVerificationLoading = verificationStatus === "loading";
 
+  const websiteUrl = import.meta.env.VITE_WEBSITE_URL || "/";
+
   return (
-    <section className="relative p-8 flex flex-col items-center justify-center h-screen w-screen bg-card dark:bg-background">
-      {isVerificationLoading && <Loader2 className="size-8 animate-spin text-muted-foreground" />}
+    <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-background px-8 py-16">
+      {isVerificationLoading && (
+        <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
+      )}
       <div
         className={
           isVerificationLoading
             ? "pointer-events-none absolute opacity-0"
-            : "flex w-full flex-col items-center"
+            : "relative z-10 flex w-full max-w-[380px] flex-col items-center text-center"
         }
         aria-hidden={isVerificationLoading}
         inert={isVerificationLoading ? true : undefined}
       >
-        <Link to={import.meta.env.VITE_WEBSITE_URL || "/"} className="mb-6">
-          <Logo />
+        <Link to={websiteUrl} aria-label="Home">
+          <Icon size="lg" />
         </Link>
+        <h4 className="mt-6 mb-6 text-2xl font-medium text-foreground">Sign in or create your account</h4>
         {error && (
-          <div className="text-red-500 mb-4 text-center max-w-md">
+          <div className="mb-4 text-center text-destructive">
             {errorMessage || `Authentication error: ${error.replace(/_/g, " ")}`}
           </div>
         )}
@@ -63,6 +69,17 @@ export default function LoginPage() {
           redirectUrl={redirectUrl}
           onVerificationStatusChange={setVerificationStatus}
         />
+        <p className="mt-8 text-sm leading-[1.5] text-balance text-muted-foreground">
+          By signing in, you agree to our{" "}
+          <a href={`${websiteUrl}/terms`} className="underline underline-offset-4 hover:text-foreground">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href={`${websiteUrl}/privacy`} className="underline underline-offset-4 hover:text-foreground">
+            Privacy Policy
+          </a>
+          .
+        </p>
       </div>
     </section>
   );

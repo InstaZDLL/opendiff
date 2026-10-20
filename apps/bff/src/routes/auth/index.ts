@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { emailRoutes } from "./email";
 import { githubRoutes } from "./github";
 import { googleRoutes } from "./google";
 import { linkingRoutes } from "./linking";
@@ -15,6 +16,9 @@ authRoutes.route("/google", googleRoutes);
 
 // Microsoft OAuth: GET /microsoft, GET /microsoft/callback
 authRoutes.route("/microsoft", microsoftRoutes);
+
+// Email sign-in: POST /email/start, POST /email/verify
+authRoutes.route("/email", emailRoutes);
 
 // GitHub linking/unlinking: GET /github/link, DELETE /github/unlink
 authRoutes.route("/github", linkingRoutes);

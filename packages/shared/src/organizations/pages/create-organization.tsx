@@ -9,7 +9,8 @@ import {
 } from "components/components/ui/card";
 import { Input } from "components/components/ui/input";
 import { Label } from "components/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useOrganization } from "..";
@@ -34,7 +35,7 @@ export default function CreateOrganizationPage() {
   if (isAuthLoading) {
     return (
       <section className="w-screen h-screen flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
       </section>
     );
   }
@@ -59,7 +60,7 @@ export default function CreateOrganizationPage() {
   if (isLoadingOrgs) {
     return (
       <section className="w-screen h-screen flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <HugeiconsIcon icon={Loading03Icon} className="size-8 animate-spin text-muted-foreground" />
       </section>
     );
   }
@@ -139,7 +140,7 @@ export default function CreateOrganizationPage() {
             </div>
 
             <Button type="submit" className="w-full" disabled={isCreating || !name.trim()}>
-              {isCreating && <Loader2 className="size-4 animate-spin" />}
+              {isCreating && <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />}
               {isCreating ? "Creating..." : "Create organization"}
             </Button>
           </CardContent>

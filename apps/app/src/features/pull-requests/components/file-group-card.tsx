@@ -7,7 +7,8 @@ import {
 import NumberBadge from "components/components/ui/number-badge";
 import { Skeleton } from "components/components/ui/skeleton";
 import { TooltipContent, TooltipRoot, TooltipTrigger } from "components/components/ui/tooltip";
-import { FileCode, MessageSquare } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { FileCodeIcon, MessageSquareIcon } from "@hugeicons/core-free-icons";
 import type { PullRequestCommentDetail } from "../hooks/use-pull-requests";
 import { CommentRow } from "./comment-row";
 
@@ -52,7 +53,7 @@ export function FileGroupCard({
           <AccordionTrigger>
             <div className="flex items-center gap-2 min-w-0 flex-1 justify-between">
               <div className="flex items-center gap-1.5">
-                <FileCode className="size-3 text-foreground shrink-0" />
+                <HugeiconsIcon icon={FileCodeIcon} className="size-3 text-foreground shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="text-sm truncate">{filePath}</span>
                 </div>
@@ -61,7 +62,7 @@ export function FileGroupCard({
                 <TooltipRoot>
                   <TooltipTrigger delay={125}>
                     <div className="flex items-center gap-1 select-none cursor-pointer text-muted-foreground hover:text-foreground transition-colors">
-                      <MessageSquare className="size-3 shrink-0" />
+                      <HugeiconsIcon icon={MessageSquareIcon} className="size-3 shrink-0" />
                       <span className="text-xs font-normal">{comments.length}</span>
                     </div>
                   </TooltipTrigger>

@@ -11,6 +11,11 @@ const organization = {
 };
 const review = {
   create: mock((_args: unknown): Promise<unknown> => Promise.resolve({ id: "review-1" })),
+  findFirst: mock((_args: unknown): Promise<unknown | null> => Promise.resolve({ id: "review-1" })),
+};
+const mergedPullRequest = {
+  upsert: mock((_args: unknown): Promise<unknown> => Promise.resolve({})),
+  count: mock((): Promise<number> => Promise.resolve(0)),
 };
 const getOrgQuotaPool = mock(() =>
   Promise.resolve({ total: 1_000_000, used: 10_000, hasUnlimited: false })
@@ -21,6 +26,7 @@ mock.module("../db", () => ({
     repositorySettings,
     organization,
     review,
+    mergedPullRequest,
   },
 }));
 
@@ -287,5 +293,120 @@ describe("internal settings routes", () => {
     expect(body.effectiveEnabled).toBe(false);
     expect(body.disabledReason).toBe("missing_organization");
     expect(getOrgQuotaPool).not.toHaveBeenCalled();
+  });
+
+  it("uses OpenDiff default credentials for active Pro organizations", async () => {
+    mockResolvedRepositorySettings({
+      id: "repo-settings-1",
+      owner: "owner",
+      repo: "repo",
+      organization: {
+        subscriptionTier: "PRO",
+        subscriptionStatus: "ACTIVE",
+      },
+    });
+
+    const app = createApp();
+    const response = await app.fetch(authRequest("/api/internal/ai-config/owner/repo"));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ useDefault: true });
+  });
+
+  it("returns BYOK API key config for active Self-sufficient organizations", async () => {
+    mockResolvedRepositorySettings({
+      id: "repo-settings-1",
+      owner: "owner",
+      repo: "repo",
+      organization: {
+        subscriptionTier: "SELF_SUFFICIENT",
+        subscriptionStatus: "ACTIVE",
+        aiAuthMethod: "API_KEY",
+        aiModel: "openai/gpt-5-codex",
+        aiApiKey: "sk-test-openai",
+        anthropicApiKey: null,
+      },
+    });
+
+    const app = createApp();
+    const response = await app.fetch(authRequest("/api/internal/ai-config/owner/repo"));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({
+      authMethod: "API_KEY",
+      model: "openai/gpt-5-codex",
+      credential: "sk-test-openai",
+      useDefault: false,
+    });
+  });
+
+  it("does not fall back to OpenDiff credentials when Self-sufficient key is missing", async () => {
+    mockResolvedRepositorySettings({
+      id: "repo-settings-1",
+      owner: "owner",
+      repo: "repo",
+      organization: {
+        subscriptionTier: "SELF_SUFFICIENT",
+        subscriptionStatus: "ACTIVE",
+        aiAuthMethod: null,
+        aiModel: "openai/gpt-5-codex",
+        aiApiKey: null,
+        anthropicApiKey: null,
+      },
+    });
+
+    const app = createApp();
+    const response = await app.fetch(authRequest("/api/internal/ai-config/owner/repo"));
+    const body = await response.json();
+
+    expect(response.status).toBe(409);
+    expect(body).toEqual({
+      error: "No BYOK API key configured for Self-sufficient organization",
+      useDefault: false,
+    });
+  });
+});
+
+describe("POST /api/internal/pull-requests/merged", () => {
+  const merge = { owner: "acme", repo: "api", pullNumber: 7, mergedAt: "2026-10-20T10:00:00Z" };
+
+  function post(body: unknown, apiKey = "internal-secret") {
+    return createApp().fetch(
+      new Request("http://localhost/api/internal/pull-requests/merged", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-API-Key": apiKey },
+        body: JSON.stringify(body),
+      })
+    );
+  }
+
+  beforeEach(() => {
+    process.env.REVIEW_AGENT_API_KEY = "internal-secret";
+    mergedPullRequest.upsert.mockClear();
+  });
+
+  it("rejects requests without the agent API key", async () => {
+    const res = await post(merge, "wrong");
+    expect(res.status).toBe(401);
+    expect(mergedPullRequest.upsert).not.toHaveBeenCalled();
+  });
+
+  it("rejects incomplete payloads", async () => {
+    const res = await post({ owner: "acme", repo: "api" });
+    expect(res.status).toBe(400);
+    expect(mergedPullRequest.upsert).not.toHaveBeenCalled();
+  });
+
+  it("records the merge", async () => {
+    const res = await post(merge);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ status: "recorded" });
+    expect(mergedPullRequest.upsert).toHaveBeenCalledWith({
+      where: { owner_repo_pullNumber: { owner: "acme", repo: "api", pullNumber: 7 } },
+      create: { owner: "acme", repo: "api", pullNumber: 7, mergedAt: new Date("2026-10-20T10:00:00Z") },
+      update: { mergedAt: new Date("2026-10-20T10:00:00Z") },
+    });
   });
 });

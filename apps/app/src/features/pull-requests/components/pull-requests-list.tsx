@@ -1,7 +1,8 @@
 import { Button } from "components/components/ui/button";
 import { Skeleton } from "components/components/ui/skeleton";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, ExternalLink, GitPullRequest } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon, GitPullRequestIcon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import type { PullRequestSummary } from "../hooks/use-pull-requests";
 
@@ -24,7 +25,7 @@ function PullRequestRow({ pullRequest }: { pullRequest: PullRequestSummary; show
       onMouseLeave={() => setHovered(false)}
     >
       <div className="flex items-center gap-3">
-        <GitPullRequest className="size-5 text-foreground" />
+        <HugeiconsIcon icon={GitPullRequestIcon} className="size-5 text-foreground" />
         <div className="min-w-0 flex flex-col">
           <div className="flex items-center gap-4 flex-wrap">
             <span className="text-lg truncate">{title}</span>
@@ -48,7 +49,7 @@ function PullRequestRow({ pullRequest }: { pullRequest: PullRequestSummary; show
                       window.open(pullRequest.pullUrl, "_blank", "noopener,noreferrer");
                   }}
                 >
-                  <ExternalLink className="size-4" />
+                  <HugeiconsIcon icon={ExternalLinkIcon} className="size-4" />
                 </Button>
               </motion.div>
             )}
@@ -131,7 +132,7 @@ export function PullRequestsList({
               onClick={() => onPageChange(Math.max(1, page - 1))}
               disabled={page === 1}
             >
-              <ChevronLeft className="size-4" />
+              <HugeiconsIcon icon={ChevronLeftIcon} className="size-4" />
             </Button>
             <span className="text-sm text-muted-foreground px-2">
               Page {pagination.page} of {pagination.totalPages}
@@ -142,7 +143,7 @@ export function PullRequestsList({
               onClick={() => onPageChange(Math.min(pagination.totalPages, page + 1))}
               disabled={page === pagination.totalPages}
             >
-              <ChevronRight className="size-4" />
+              <HugeiconsIcon icon={ChevronRightIcon} className="size-4" />
             </Button>
           </div>
         </div>

@@ -47,7 +47,6 @@ export function PricingPage() {
       <div className="relative z-10 grid md:grid-cols-3 gap-6 mb-6">
         {plans.map((plan) => (
           <PlanCard
-            className="shadow-md dark:shadow-none"
             key={plan.tier}
             plan={plan}
             isYearly={isYearly}

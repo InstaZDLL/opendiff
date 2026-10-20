@@ -2,6 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { Hono } from "hono";
 import { prisma } from "../db";
 import { getOrgQuotaPool } from "../middleware/organization";
+import { recordMergedPullRequest } from "../services/merged-pull-requests";
 import { createNotification } from "../services/notifications";
 import { buildIssueFingerprint } from "../utils/issue-fingerprint";
 
@@ -311,26 +312,32 @@ internalRoutes.get("/ai-config/:owner/:repo", async (c) => {
 
   const org = repoSettings.organization;
 
-  // Check if org has BYOK tier with active subscription
-  const hasByokTier =
-    org.subscriptionTier === "SELF_SUFFICIENT" && org.subscriptionStatus === "ACTIVE";
+  const hasActiveSubscription = org.subscriptionStatus === "ACTIVE";
+  const hasByokTier = org.subscriptionTier === "SELF_SUFFICIENT" && hasActiveSubscription;
+  const hasOpenDiffPaidTier =
+    (org.subscriptionTier === "PRO" || org.subscriptionTier === "ULTRA") && hasActiveSubscription;
 
   if (!hasByokTier) {
-    return c.json({ error: "Organization not on Self-sufficient tier", useDefault: true });
+    if (hasOpenDiffPaidTier) {
+      return c.json({ useDefault: true });
+    }
+
+    return c.json(
+      { error: "Organization does not have an active paid AI plan", useDefault: false },
+      403
+    );
   }
 
-  const authMethod = org.aiAuthMethod ?? (org.anthropicApiKey ? "API_KEY" : null);
+  const authMethod = org.aiAuthMethod === "API_KEY" || org.anthropicApiKey ? "API_KEY" : null;
   const model =
     org.aiModel || (org.anthropicApiKey ? "anthropic/claude-sonnet-4-5" : "openai/gpt-5.2-codex");
-  const credential =
-    authMethod === "OAUTH_TOKEN"
-      ? org.aiOauthToken
-      : authMethod === "API_KEY"
-        ? org.aiApiKey || org.anthropicApiKey
-        : null;
+  const credential = authMethod === "API_KEY" ? org.aiApiKey || org.anthropicApiKey : null;
 
   if (!authMethod || !credential) {
-    return c.json({ error: "No AI credentials configured", useDefault: true });
+    return c.json(
+      { error: "No BYOK API key configured for Self-sufficient organization", useDefault: false },
+      409
+    );
   }
 
   return c.json({
@@ -338,12 +345,6 @@ internalRoutes.get("/ai-config/:owner/:repo", async (c) => {
     model,
     credential,
     useDefault: false,
-    ...(authMethod === "OAUTH_TOKEN" && org.aiOauthRefreshToken
-      ? { refreshToken: org.aiOauthRefreshToken }
-      : {}),
-    ...(authMethod === "OAUTH_TOKEN" && org.aiOauthAccountId
-      ? { accountId: org.aiOauthAccountId }
-      : {}),
   });
 });
 
@@ -369,6 +370,31 @@ internalRoutes.get("/autofix-setting/:owner/:repo", async (c) => {
 });
 
 // Mark a fix as applied (agent callback after successful push)
+/** Called by the review agent when a pull request is merged; counts it if Contrast reviewed it. */
+internalRoutes.post("/pull-requests/merged", async (c) => {
+  const apiKey = c.req.header("X-API-Key") || "";
+  const expectedApiKey = process.env.REVIEW_AGENT_API_KEY;
+  if (!expectedApiKey || !apiKey || !safeCompare(apiKey, expectedApiKey)) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const body = await c.req.json().catch(() => ({}));
+  const { owner, repo, pullNumber, mergedAt } = body as Record<string, unknown>;
+  const mergedDate = typeof mergedAt === "string" ? new Date(mergedAt) : null;
+  if (
+    typeof owner !== "string" ||
+    typeof repo !== "string" ||
+    typeof pullNumber !== "number" ||
+    !mergedDate ||
+    Number.isNaN(mergedDate.getTime())
+  ) {
+    return c.json({ error: "owner, repo, pullNumber and mergedAt are required" }, 400);
+  }
+
+  const status = await recordMergedPullRequest({ owner, repo, pullNumber, mergedAt: mergedDate });
+  return c.json({ status });
+});
+
 internalRoutes.post("/fixes/:fixId/applied", async (c) => {
   const apiKey = c.req.header("X-API-Key") || "";
   const expectedApiKey = process.env.REVIEW_AGENT_API_KEY;

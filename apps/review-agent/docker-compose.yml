@@ -12,6 +12,9 @@ services:
       - GITHUB_APP_ID=${GITHUB_APP_ID:-}
       - GITHUB_PRIVATE_KEY_PATH=/app/private-key.pem
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENCODE_USE_AUTH_JSON=${OPENCODE_USE_AUTH_JSON:-false}
+      - OPENCODE_AUTH_PATH=${OPENCODE_AUTH_PATH:-}
       - BOT_USERNAME=${BOT_USERNAME:-opendiff-bot}
       - BOT_TEAMS=${BOT_TEAMS:-}
     env_file:

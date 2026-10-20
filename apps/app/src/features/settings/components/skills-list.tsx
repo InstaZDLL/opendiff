@@ -1,6 +1,7 @@
 import type { Skill } from "@/features/settings";
 import { Skeleton } from "components/components/ui/skeleton";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { useEffect, useRef } from "react";
 import { SkillCard } from "./skill-card";
 
@@ -107,7 +108,7 @@ export function SkillsList({
 
       {isFetchingNextPage && (
         <div className="flex justify-center py-4">
-          <Loader2 className="size-4 animate-spin text-muted-foreground" />
+          <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin text-muted-foreground" />
         </div>
       )}
     </>

@@ -6,7 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "components/components/ui/card";
-import { ExternalLink } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ExternalLinkIcon } from "@hugeicons/core-free-icons";
 import type { useAuth } from "shared/auth";
 import { CustomReviewRulesCard } from "./custom-review-rules-card";
 
@@ -42,7 +43,7 @@ export function CodeReviewTab({ user, orgId }: CodeReviewTabProps) {
             <Button asChild>
               <a href={installUrl} target="_blank" rel="noopener noreferrer">
                 Install GitHub App
-                <ExternalLink className="size-4" />
+                <HugeiconsIcon icon={ExternalLinkIcon} className="size-4" />
               </a>
             </Button>
           </CardContent>

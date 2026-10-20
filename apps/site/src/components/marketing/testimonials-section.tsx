@@ -1,5 +1,6 @@
 import { Card, CardContent } from "components/components/ui/card";
-import { Quote } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { QuoteIcon } from "@hugeicons/core-free-icons";
 
 const testimonials = [
   {
@@ -61,7 +62,7 @@ export function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <Card key={testimonial.author} className="relative">
               <CardContent className="pt-6">
-                <Quote className="size-8 text-primary/20 mb-4" />
+                <HugeiconsIcon icon={QuoteIcon} className="size-8 text-primary/20 mb-4" />
                 <p className="text-muted-foreground mb-6">"{testimonial.quote}"</p>
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">

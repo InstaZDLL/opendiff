@@ -3,7 +3,8 @@ import { Card, CardContent } from "components/components/ui/card";
 import { Input } from "components/components/ui/input";
 import { Label } from "components/components/ui/label";
 import { Textarea } from "components/components/ui/textarea";
-import { Calendar, Mail, MessageSquare } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar03Icon, Mail01Icon, MessageSquareIcon } from "@hugeicons/core-free-icons";
 
 export function CTASection() {
   return (
@@ -22,7 +23,7 @@ export function CTASection() {
             <div className="space-y-6">
               <div className="flex items-start gap-4">
                 <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Calendar className="size-5 text-primary" />
+                  <HugeiconsIcon icon={Calendar03Icon} className="size-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">Free Consultation</h3>
@@ -34,7 +35,7 @@ export function CTASection() {
 
               <div className="flex items-start gap-4">
                 <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <MessageSquare className="size-5 text-primary" />
+                  <HugeiconsIcon icon={MessageSquareIcon} className="size-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">Custom Proposal</h3>
@@ -46,7 +47,7 @@ export function CTASection() {
 
               <div className="flex items-start gap-4">
                 <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Mail className="size-5 text-primary" />
+                  <HugeiconsIcon icon={Mail01Icon} className="size-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">Direct Contact</h3>
